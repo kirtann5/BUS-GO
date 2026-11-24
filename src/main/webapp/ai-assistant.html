@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="theme-color" content="#ffffff" id="metaThemeColor"/>
+  <title>AI Assistant &mdash; BusGo GPT Smart Travel Copilot</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    body.ai-page-body {
+      background-color: var(--bg, #f8fafc);
+      color: var(--text, #1e293b);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-body, 'DM Sans', sans-serif);
+    }
+
+    .ai-page-navbar {
+      background: var(--card-bg, #ffffff);
+      border-bottom: 1px solid var(--border, #e2e8f0);
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+
+    .ai-page-main {
+      max-width: 980px;
+      width: 100%;
+      margin: 0 auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      height: calc(100vh - 65px);
+    }
+
+    .ai-page-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg, #ffffff);
+      border: 1px solid var(--border, #e2e8f0);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+    }
+
+    .ai-page-card-header {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ai-route-badge {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 20px;
+      background: rgba(2, 132, 199, 0.12);
+      color: #0284c7;
+      border: 1px solid rgba(2, 132, 199, 0.28);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .ai-route-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #0284c7;
+      display: inline-block;
+    }
+
+    .ai-page-card .ai-chat-body {
+      flex: 1;
+      padding: 20px 22px;
+      overflow-y: auto;
+      background: var(--card-bg, #ffffff);
+    }
+
+    .ai-page-card .ai-chat-footer {
+      padding: 12px 20px 10px;
+      background: var(--card-bg, #ffffff);
+      border-top: 1px solid var(--border, #e2e8f0);
+    }
+
+    [data-theme="dark"] body.ai-page-body {
+      background-color: #0b1120;
+      color: #f8fafc;
+    }
+
+    [data-theme="dark"] .ai-page-navbar {
+      background: #0f172a;
+      border-bottom-color: #1e293b;
+    }
+
+    [data-theme="dark"] .ai-page-card {
+      background: #0f172a;
+      border-color: #1e293b;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    [data-theme="dark"] .ai-page-card-header {
+      background: #080d19;
+      border-bottom-color: #1e293b;
+    }
+
+    [data-theme="dark"] .ai-page-card .ai-chat-body {
+      background: #0b1120;
+    }
+
+    [data-theme="dark"] .ai-page-card .ai-chat-footer {
+      background: #080d19;
+      border-top-color: #1e293b;
+    }
+
+    [data-theme="dark"] .ai-route-badge {
+      background: rgba(56, 189, 248, 0.12);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    [data-theme="dark"] .ai-route-badge .dot {
+      background: #38bdf8;
+    }
+
+    @media (max-width: 768px) {
+      .ai-page-main {
+        padding: 8px;
+        height: calc(100vh - 60px);
+      }
+      .ai-page-card {
+        border-radius: 12px;
+      }
+      .ai-page-card-header {
+        padding: 10px 14px;
+      }
+      .ai-page-card .ai-chat-body {
+        padding: 14px 12px;
+      }
+      .ai-page-card .ai-chat-footer {
+        padding: 10px 12px 8px;
+      }
+      .ai-route-badge {
+        font-size: 11.5px;
+        padding: 3px 10px;
+      }
+    }
+  </style>
+</head>
+<body class="ai-page-body">
+
+  <!-- TOP FIXED NAVIGATION -->
+  <header class="ai-page-navbar">
+    <div class="container-fluid px-3 px-md-4 d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-3">
+        <a href="index.html" class="navbar-brand d-flex align-items-center gap-2 text-decoration-none">
+          <span class="brand-icon"></span>
+          <span class="fw-bold fs-5 text-dark" style="font-family: var(--font-head, 'Syne', sans-serif);">BusGo</span>
+        </a>
+        <div class="ai-route-badge" id="aiPageRouteBadge">
+          <span class="dot"></span>
+          <span id="aiRouteBadgeText">Select Route</span>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearAiChat()" title="Start New Chat Session">
+          + New Chat
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-dark" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">
+          Theme
+        </button>
+        <a href="index.html" class="btn btn-sm btn-primary fw-bold text-white px-3" style="border-radius: 8px;">
+          &larr; Back to Booking
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CHAT CONTAINER -->
+  <main class="ai-page-main">
+    <div class="ai-page-card">
+      <div class="ai-page-card-header">
+        <div class="d-flex align-items-center gap-2.5">
+          <div class="ai-chatgpt-badge">
+            <svg viewBox="0 0 24 24" class="ai-gpt-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="14" rx="3"></rect>
+              <path d="M3 9h18"></path>
+              <path d="M12 3v6"></path>
+              <circle cx="7" cy="13" r="1.2" fill="currentColor"></circle>
+              <circle cx="17" cy="13" r="1.2" fill="currentColor"></circle>
+              <path d="M10 13h4"></path>
+              <path d="M6 17v3a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-3"></path>
+              <path d="M15 17v3a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-3"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <h6 class="m-0 fw-bold text-white fs-6">BusGo GPT Travel Assistant</h6>
+              <span class="ai-version-pill">4.0 AI</span>
+            </div>
+            <div class="ai-status-indicator">
+              <span class="ai-status-dot"></span> Online &bull; Intelligent Route &amp; Travel Copilot
+            </div>
+          </div>
+        </div>
+        <div class="small text-white-50 d-none d-md-block">
+          Driver Desk: Captain Kirtan (+91 6264213958)
+        </div>
+      </div>
+
+      <!-- CHAT BODY (MESSAGES) -->
+      <div class="ai-chat-body" id="aiChatBody">
+        <!-- Populated dynamically by initAiChat() or clearAiChat() -->
+      </div>
+
+      <!-- CHAT FOOTER (INPUT) -->
+      <div class="ai-chat-footer">
+        <form id="aiChatForm" onsubmit="handleAiChatSubmit(event)" class="d-flex flex-column gap-1 m-0">
+          <div class="ai-input-wrapper">
+            <textarea id="aiChatInput" class="form-control ai-textarea" placeholder="Ask BusGo GPT anything in Hindi or English (e.g. Indore to Ujjain bus schedule, cheapest bus, stoppages)..." rows="1" autocomplete="off"></textarea>
+            <div class="ai-input-actions">
+              <button type="button" class="ai-stop-btn d-none" id="aiStopBtn" onclick="stopAiGeneration()" title="Stop Generating">
+                <span class="ai-stop-square"></span> Stop
+              </button>
+              <button type="submit" class="ai-send-btn-circle" id="aiSendBtn" title="Send message" disabled>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="ai-disclaimer-text">
+            BusGo GPT can make mistakes. Verify critical route info with Captain Kirtan (+91 6264213958).
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // Initialize dedicated AI page context on load
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const fromParam = urlParams.get('from');
+        const toParam = urlParams.get('to');
+        const badgeEl = document.getElementById('aiRouteBadgeText');
+
+        if (fromParam && toParam) {
+          AiSession.context.origin = fromParam.trim();
+          AiSession.context.destination = toParam.trim();
+          if (badgeEl) {
+            badgeEl.textContent = `Route: ${fromParam} \u2794 ${toParam}`;
+          }
+          renderAiWelcomeScreen();
+        } else if (fromParam) {
+          AiSession.context.origin = fromParam.trim();
+          if (badgeEl) badgeEl.textContent = `From: ${fromParam}`;
+          renderAiWelcomeScreen();
+        } else if (toParam) {
+          AiSession.context.destination = toParam.trim();
+          if (badgeEl) badgeEl.textContent = `To: ${toParam}`;
+          renderAiWelcomeScreen();
+        } else {
+          if (badgeEl) badgeEl.textContent = 'All Routes (Select Route)';
+          renderAiWelcomeScreen();
+        }
+      } catch (err) {
+        console.error('Error initializing AI page route context:', err);
+      }
+    });
+  </script>
+</body>
+</html>

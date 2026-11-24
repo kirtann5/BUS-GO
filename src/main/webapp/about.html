@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="theme-color" content="#ffffff" id="metaThemeColor"/>
+  <title>About Us — BusGo Management Team</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    /* Clean, Lightweight redBus Corporate Layout */
+    body {
+      background-color: #fafafa;
+      color: #374151;
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .about-nav {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+
+    .about-main-wrapper {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 36px 20px 60px;
+      flex-grow: 1;
+    }
+
+    .company-summary {
+      font-size: 15px;
+      line-height: 1.75;
+      color: #4b5563;
+      margin-bottom: 32px;
+      text-align: justify;
+    }
+
+    .management-section-title {
+      font-family: var(--font-head);
+      color: #d84e55; /* redBus signature crimson-red */
+      font-size: 1.65rem;
+      font-weight: 800;
+      margin-top: 24px;
+      margin-bottom: 32px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid rgba(216, 78, 85, 0.15);
+      display: inline-block;
+    }
+
+    .team-member-block {
+      display: flex;
+      align-items: flex-start;
+      gap: 32px;
+      margin-bottom: 44px;
+      padding-bottom: 36px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .team-member-block:last-child {
+      border-bottom: none;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+    }
+
+    .member-photo-container {
+      flex-shrink: 0;
+    }
+
+    .member-avatar {
+      width: 145px;
+      height: 145px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: top center;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+      border: 3px solid #ffffff;
+      display: block;
+      background: #e2e8f0;
+    }
+
+    .member-content {
+      flex-grow: 1;
+    }
+
+    .member-header-name {
+      font-family: var(--font-head);
+      color: #d84e55;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .member-bio-text {
+      font-size: 14.5px;
+      line-height: 1.75;
+      color: #4b5563;
+      margin-bottom: 0;
+      text-align: justify;
+    }
+
+    .member-sub-badge {
+      display: inline-block;
+      background: #fef2f2;
+      color: #b91c1c;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid #fecaca;
+      margin-left: 8px;
+      vertical-align: middle;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    /* Mobile Responsiveness (< 768px) */
+    @media (max-width: 767px) {
+      .about-main-wrapper {
+        padding: 24px 16px 40px;
+      }
+
+      .company-summary {
+        font-size: 14px;
+        line-height: 1.65;
+        margin-bottom: 24px;
+      }
+
+      .management-section-title {
+        font-size: 1.45rem;
+        margin-bottom: 24px;
+      }
+
+      .team-member-block {
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 32px;
+        padding-bottom: 28px;
+        text-align: center;
+      }
+
+      .member-avatar {
+        width: 125px;
+        height: 125px;
+      }
+
+      .member-header-name {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+      }
+
+      .member-bio-text {
+        font-size: 13.5px;
+        line-height: 1.65;
+        text-align: left;
+      }
+    }
+
+    /* Dark Theme Support */
+    [data-theme="dark"] body {
+      background-color: #0b1120;
+      color: #cbd5e1;
+    }
+
+    [data-theme="dark"] .about-nav {
+      background: #0f172a;
+      border-bottom-color: #1e293b;
+    }
+
+    [data-theme="dark"] .company-summary {
+      color: #94a3b8;
+    }
+
+    [data-theme="dark"] .management-section-title {
+      color: #ff6b35;
+      border-bottom-color: rgba(255, 107, 53, 0.25);
+    }
+
+    [data-theme="dark"] .team-member-block {
+      border-bottom-color: #1e293b;
+    }
+
+    [data-theme="dark"] .member-avatar {
+      border-color: #1e293b;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    }
+
+    [data-theme="dark"] .member-header-name {
+      color: #ff6b35;
+    }
+
+    [data-theme="dark"] .member-bio-text {
+      color: #cbd5e1;
+    }
+
+    [data-theme="dark"] .member-sub-badge {
+      background: rgba(255, 107, 53, 0.15);
+      color: #ff8a5b;
+      border-color: rgba(255, 107, 53, 0.35);
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP COMPACT NAVIGATION BAR -->
+<nav class="about-nav">
+  <div class="container d-flex justify-content-between align-items-center" style="max-width: 920px;">
+    <a class="navbar-brand d-flex align-items-center gap-1 text-decoration-none" href="index.html">
+      <span class="brand-icon"></span>
+      <span class="fw-bold fs-4" style="color: var(--primary); font-family: var(--font-head); letter-spacing: -0.5px;">BusGo</span>
+    </a>
+    
+    <div class="d-flex align-items-center gap-2">
+      <a href="index.html" class="btn btn-outline-secondary btn-sm px-3 fw-bold" style="border-radius: 8px;">
+        &larr; Back to Booking
+      </a>
+      <button class="btn btn-outline-secondary btn-sm shadow-sm" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark / Light Mode" style="border-radius: 8px;">
+        <span id="themeToggleLabel" class="badge bg-secondary-subtle text-secondary border px-2 py-1 fw-bold">Dark Mode</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT CONTAINER -->
+<main class="about-main-wrapper">
+  
+  <!-- COMPANY SUMMARY OVERVIEW -->
+  <p class="company-summary">
+    BusGo is India's next-generation online bus ticketing platform, built to eliminate travel uncertainty and deliver safe, dependable, and instant bus connectivity across the country. By offering comprehensive bus schedules across 500+ cities, transparent fares with zero hidden surcharges, dedicated front row passenger safety protection, and live highway GPS checkpoints, BusGo has earned the trust of daily intercity commuters. Headquartered in Madhya Pradesh, BusGo operates active express corridors across Indore, Dharampuri, Bhopal, Ujjain, Pune, and Mumbai.
+  </p>
+
+  <!-- SECTION TITLE -->
+  <h2 class="management-section-title">Management Team</h2>
+
+  <!-- 1. KIRTAN BHAWSAR (CEO & FULL STACK DEVELOPER) -->
+  <div class="team-member-block">
+    <div class="member-photo-container">
+      <img src="images/kirtan_bhawsar.jpg" alt="Kirtan Bhawsar" class="member-avatar" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80';"/>
+    </div>
+    <div class="member-content">
+      <div class="member-header-name">
+        Kirtan Bhawsar, CEO
+        <span class="member-sub-badge">Full Stack Developer</span>
+      </div>
+      <p class="member-bio-text">
+        Kirtan Bhawsar has been Chief Executive Officer and Lead Full Stack Developer of BusGo since 2026. Prior to founding BusGo, he specialized in scalable backend architectures, high-concurrency ticket reservation engines, and conversational AI travel assistance. Born and raised in Moti Nagar Colony, Dharampuri (Dhar District, Madhya Pradesh), Kirtan completed his Bachelor of Technology (B.Tech) degree from the Jawaharlal Institute of Technology (JIT), Vidhya Vihar, Borawan. At BusGo, Kirtan spearheads strategic product direction, core database engineering, cloud payment infrastructures, and fleet network operations. Under his leadership, BusGo has pioneered specialized passenger safety standards including dedicated solo female seat reservations and direct 24x7 driver desk lines.
+      </p>
+    </div>
+  </div>
+
+  <!-- 2. BHAVESH SAVNER (CTO & FRONTEND DEVELOPER) -->
+  <div class="team-member-block">
+    <div class="member-photo-container">
+      <img src="images/bhavesh_savner.jpg" alt="Bhavesh Savner" class="member-avatar" onerror="this.src='https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80';"/>
+    </div>
+    <div class="member-content">
+      <div class="member-header-name">
+        Bhavesh Savner, CTO
+        <span class="member-sub-badge">Frontend Developer</span>
+      </div>
+      <p class="member-bio-text">
+        Bhavesh Savner serves as Chief Technology Officer and Lead Frontend Developer at BusGo since 2026. A native of Maha Laxmi Nagar, Motipura Main Road, Khargone (Madhya Pradesh), Bhavesh plays an integral role in setting the company's technology direction, user interface design, and client-side architecture. At BusGo, he leads effective delivery of intuitive interactive seat layouts, live Leaflet highway GPS transit tracking, and high-performing mobile-first web experiences. A frontend specialist passionate about smooth user journeys, Bhavesh strongly believes that clean code and rigorous attention to usability create the ultimate booking experience. He oversees multi-theme consistency and rapid performance across all desktop and smartphone devices.
+      </p>
+    </div>
+  </div>
+
+</main>
+
+<!-- SIMPLE, CLEAN FOOTER -->
+<footer class="footer mt-auto">
+  <div class="container" style="max-width: 920px;">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="footer-brand">BusGo</div>
+        <p class="footer-desc mb-2">India's most trusted online bus booking platform. Safe, affordable, and always on time.</p>
+        <div class="small text-secondary">
+          Moti Nagar Colony, Dharampuri (M.P.) &bull; Maha Laxmi Nagar, Motipura Main Road, Khargone (M.P.)
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <h6>Company</h6>
+        <ul class="footer-links">
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="careers.html">Careers</a></li>
+          <li><a href="index.html#routes-section">Popular Routes</a></li>
+          <li><a href="index.html#how-section">How It Works</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 col-6">
+        <h6>Support</h6>
+        <ul class="footer-links">
+          <li><a href="index.html">Help Center</a></li>
+          <li><a href="index.html">Cancellation</a></li>
+          <li><a href="https://wa.me/916264213958" target="_blank">Contact Captain Kirtan</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 BusGo Technologies. Founded by Kirtan Bhawsar &amp; Bhavesh Savner.</span>
+      <span>Privacy Policy &bull; Terms of Service</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Theme Engine for About Us Page
+  function initTheme() {
+    const saved = localStorage.getItem('busgo_theme') || 'light';
+    applyTheme(saved);
+  }
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-bs-theme', theme);
+    localStorage.setItem('busgo_theme', theme);
+    const isDark = theme === 'dark';
+    const label = document.getElementById('themeToggleLabel');
+    if (label) {
+      label.textContent = isDark ? 'Dark Mode' : 'Light Mode';
+      label.className = isDark ? 'badge bg-warning text-dark px-2 py-1 fw-bold' : 'badge bg-secondary text-white px-2 py-1 fw-bold';
+    }
+    const metaTheme = document.getElementById('metaThemeColor');
+    if (metaTheme) {
+      metaTheme.setAttribute('content', isDark ? '#0b1120' : '#ffffff');
+    }
+  }
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+  }
+  document.addEventListener('DOMContentLoaded', initTheme);
+</script>
+
+</body>
+</html>

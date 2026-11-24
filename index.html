@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#ffffff" id="metaThemeColor" />
+  <title>BusGo — Online Bus Booking</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <span class="brand-icon"></span> BusGo
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto align-items-center gap-2">
+          <li class="nav-item"><a class="nav-link" href="#search-section" onclick="closeNavMenuOnMobile()">Book</a></li>
+          <li class="nav-item"><a class="nav-link" href="#routes-section" onclick="closeNavMenuOnMobile()">Routes</a>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="#how-section" onclick="closeNavMenuOnMobile()">How It Works</a>
+          </li>
+          <li class="nav-item">
+            <a href="ai-assistant.html" target="_blank" rel="noopener noreferrer"
+              class="btn btn-outline-primary btn-sm px-3 fw-bold d-flex align-items-center gap-1.5" id="navAiBtn"
+              onclick="closeNavMenuOnMobile(); openAiInNewTab(event);" style="border-radius: 8px;">
+              AI Assistant
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="my-bookings.html" target="_blank" rel="noopener noreferrer"
+              class="btn btn-outline-dark btn-sm px-3 position-relative" onclick="closeNavMenuOnMobile()">
+              My Bookings <span class="badge bg-danger rounded-pill ms-1" id="bookingCountBadge"
+                style="display:none;">0</span>
+            </a>
+          </li>
+          <li class="nav-item d-none" id="navLiveTrackItem">
+            <button class="btn btn-outline-success btn-sm px-3 d-flex align-items-center gap-1 fw-bold"
+              onclick="closeNavMenuOnMobile(); openLiveTrackingModal()">
+              <span class="live-pulse-dot"></span> Live Bus Track
+            </button>
+          </li>
+          <li class="nav-item d-none align-items-center" id="adminDbStatusItem">
+            <span id="backendStatusBadge"
+              class="badge rounded-pill bg-light text-muted border px-2 py-1 d-flex align-items-center gap-1"
+              style="font-size: 0.75rem; cursor: pointer;" onclick="checkBackendHealth(true)"
+              title="Admin: Click to check MySQL DB health">
+              <span class="spinner-grow spinner-grow-sm text-secondary" style="width: 8px; height: 8px;"
+                role="status"></span>
+              Checking DB...
+            </span>
+          </li>
+          <li class="nav-item d-none" id="adminPanelNavItem">
+            <button class="btn btn-warning btn-sm fw-bold px-2 py-1 d-flex align-items-center gap-1 shadow-sm"
+              onclick="closeNavMenuOnMobile(); openAdminDashboard()"
+              title="Open Admin Control Center (Users & Bookings)">
+              Admin Panel
+            </button>
+          </li>
+          <li class="nav-item d-flex gap-2" id="authNavButtons">
+            <button class="btn btn-outline-primary btn-sm px-3"
+              onclick="closeNavMenuOnMobile(); openModal('loginModal')">Login</button>
+            <button class="btn btn-primary btn-sm px-3"
+              onclick="closeNavMenuOnMobile(); openModal('registerModal')">Sign Up</button>
+          </li>
+          <li class="nav-item d-none" id="userProfileNav">
+            <div class="dropdown">
+              <button class="btn btn-outline-success btn-sm dropdown-toggle px-3 d-flex align-items-center gap-2"
+                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span id="navUserName">User</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow">
+                <li>
+                  <h6 class="dropdown-header" id="navUserEmail">user@gmail.com</h6>
+                </li>
+                <li><a class="dropdown-item" href="my-bookings.html" target="_blank" rel="noopener noreferrer">My
+                    Bookings</a></li>
+                <li class="d-none" id="adminMenuOption"><a class="dropdown-item text-primary fw-bold"
+                    href="javascript:void(0)" onclick="openAdminDashboard()">Admin Panel (Users & Bookings)</a></li>
+                <li class="d-none" id="adminDbMenuOption"><a class="dropdown-item text-success small"
+                    href="javascript:void(0)" onclick="checkBackendHealth(true)">MySQL Connection Refresh</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item text-danger" href="#" onclick="logoutUser()">Logout</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item nav-theme-item">
+            <button class="btn btn-outline-secondary btn-sm shadow-sm" id="themeToggleBtn" onclick="toggleTheme()"
+              title="Toggle Dark / Light Mode">
+              <span class="theme-title-text fw-semibold">Theme Mode</span>
+              <span id="themeToggleLabel" class="badge bg-secondary-subtle text-secondary border px-2 py-1 fw-bold">Dark
+                Mode</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero-section" id="hero">
+    <div class="hero-bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+    <div class="container">
+      <div class="row align-items-center min-vh-100 pt-5">
+        <div class="col-lg-6 hero-text">
+          <div class="badge-pill mb-3">India's Smartest Bus Network</div>
+          <h1 class="hero-title">Travel Smarter.<br><span class="highlight">Book Faster.</span></h1>
+          <p class="hero-sub">Thousands of routes. Instant confirmation. Safe and comfortable buses across 500+ cities.
+          </p>
+          <div class="hero-stats d-flex gap-4 mt-4">
+            <div class="stat-item">
+              <div class="stat-num" data-count="500">0</div>
+              <div class="stat-label">Cities</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num" data-count="2000">0</div>
+              <div class="stat-label">Buses Daily</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num" data-count="120">0</div>
+              <div class="stat-label">Partners</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+          <div class="bus-illustration">
+
+            <div class="road-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEARCH SECTION -->
+  <section class="search-section" id="search-section">
+    <div class="container">
+      <div class="search-card">
+        <div class="search-tabs mb-4">
+          <button class="tab-btn active" onclick="setTripType('one-way', this)">One Way</button>
+          <button class="tab-btn" onclick="setTripType('round-trip', this)">Round Trip</button>
+        </div>
+        <form onsubmit="return searchBuses(event)">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+              <label class="form-label">From</label>
+              <div class="input-icon-wrap position-relative">
+                <span class="inp-icon"></span>
+                <input type="text" class="form-control custom-input" id="fromCity" name="search_src_city_no_autofill"
+                  placeholder="City, district, or state" autocomplete="off" autocorrect="off" autocapitalize="off"
+                  spellcheck="false" data-lpignore="true" data-form-type="other" readonly
+                  onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly','readonly');"
+                  required />
+                <div class="city-autocomplete-dropdown d-none" id="fromCityDropdown"></div>
+              </div>
+            </div>
+            <div class="col-md-1 col-12 text-center swap-col my-1 my-md-0">
+              <button type="button" class="swap-btn" onclick="swapCities()" title="Swap">⇄</button>
+            </div>
+            <div class="col-md-3 col-12">
+              <label class="form-label">To</label>
+              <div class="input-icon-wrap position-relative">
+                <span class="inp-icon"></span>
+                <input type="text" class="form-control custom-input" id="toCity" name="search_dst_city_no_autofill"
+                  placeholder="City, district, or state" autocomplete="off" autocorrect="off" autocapitalize="off"
+                  spellcheck="false" data-lpignore="true" data-form-type="other" readonly
+                  onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly','readonly');"
+                  required />
+                <div class="city-autocomplete-dropdown d-none" id="toCityDropdown"></div>
+              </div>
+            </div>
+            <div class="col-md-2 col-7">
+              <label class="form-label">Date</label>
+              <div class="input-icon-wrap">
+                <span class="inp-icon"></span>
+                <input type="date" class="form-control custom-input" id="travelDate" required />
+              </div>
+            </div>
+            <div class="col-md-1 col-5">
+              <label class="form-label">Seats</label>
+              <select class="form-select custom-input" id="seatCount">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </div>
+            <div class="col-md-2 col-12">
+              <button type="submit" class="btn btn-primary w-100 search-btn py-3 fw-bold">Search</button>
+            </div>
+          </div>
+
+          <!-- PREFERRED BUS TIME (12-HOUR FORMAT WITH AM / PM) -->
+          <div class="preferred-time-row d-flex gap-2 flex-wrap align-items-center mt-3 pt-3 border-top">
+            <span class="small fw-semibold text-secondary">Preferred Bus Time:</span>
+            <button type="button" class="btn btn-sm btn-outline-secondary hero-time-btn active" data-time="all"
+              onclick="setHeroTimeFilter('all', this)">Any Time</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary hero-time-btn" data-time="morning"
+              onclick="setHeroTimeFilter('morning', this)">Morning (06:00 AM - 12:00 PM)</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary hero-time-btn" data-time="afternoon"
+              onclick="setHeroTimeFilter('afternoon', this)">Afternoon (12:00 PM - 06:00 PM)</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary hero-time-btn" data-time="evening"
+              onclick="setHeroTimeFilter('evening', this)">Evening (06:00 PM - 11:00 PM)</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary hero-time-btn" data-time="night"
+              onclick="setHeroTimeFilter('night', this)">Night (11:00 PM - 06:00 AM)</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEARCH RESULTS -->
+  <section class="results-section" id="resultsSection" style="display:none;">
+    <div class="container">
+      <div class="results-header">
+        <h3 id="resultsTitle">Available Buses</h3>
+        <div class="filter-row d-flex gap-2 flex-wrap align-items-center mb-2">
+          <span class="small fw-bold text-secondary me-1">Bus Type:</span>
+          <button class="filter-btn filter-type-btn active" onclick="filterBuses('all', this)">All</button>
+          <button class="filter-btn filter-type-btn" onclick="filterBuses('ac', this)">AC</button>
+          <button class="filter-btn filter-type-btn" onclick="filterBuses('sleeper', this)">Sleeper</button>
+          <button class="filter-btn filter-type-btn" onclick="filterBuses('volvo', this)">Volvo</button>
+          <button class="filter-btn filter-ladies-btn" id="filterLadiesBtn" onclick="toggleLadiesFilter(this)"
+            style="color:#E11D48; border-color:#FDA4AF;">Ladies Seats Available</button>
+          <div class="ms-auto">
+            <select class="form-select form-select-sm" onchange="sortBuses(this.value)">
+              <option value="price">Sort: Price (Low to High)</option>
+              <option value="departure_asc">Sort: Departure (Early AM first)</option>
+              <option value="departure_desc">Sort: Departure (Late PM first)</option>
+              <option value="duration">Sort: Duration</option>
+              <option value="rating">Sort: Rating</option>
+            </select>
+          </div>
+        </div>
+        <div class="filter-row d-flex gap-2 flex-wrap align-items-center pt-2 border-top">
+          <span class="small fw-bold text-secondary me-1">Departure Time:</span>
+          <button class="filter-btn filter-time-btn active" data-time="all" onclick="filterByTime('all', this)">All
+            Times</button>
+          <button class="filter-btn filter-time-btn" data-time="morning" onclick="filterByTime('morning', this)">Morning
+            (06:00 AM - 12:00 PM)</button>
+          <button class="filter-btn filter-time-btn" data-time="afternoon"
+            onclick="filterByTime('afternoon', this)">Afternoon (12:00 PM - 06:00 PM)</button>
+          <button class="filter-btn filter-time-btn" data-time="evening" onclick="filterByTime('evening', this)">Evening
+            (06:00 PM - 11:00 PM)</button>
+          <button class="filter-btn filter-time-btn" data-time="night" onclick="filterByTime('night', this)">Night
+            (11:00 PM - 06:00 AM)</button>
+        </div>
+      </div>
+      <div id="busList" class="bus-list"></div>
+    </div>
+  </section>
+
+  <!-- POPULAR ROUTES -->
+  <section class="routes-section" id="routes-section">
+    <div class="container">
+      <div class="section-header text-center">
+        <div class="section-tag">Trending Now</div>
+        <h2>Popular Routes</h2>
+        <p>Most booked destinations this week</p>
+      </div>
+      <div class="row g-4" id="routesGrid"></div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section" id="how-section">
+    <div class="container">
+      <div class="section-header text-center">
+        <div class="section-tag">Simple and Fast</div>
+        <h2>How It Works</h2>
+      </div>
+      <div class="row g-4 justify-content-center align-items-center">
+        <div class="col-md-3 text-center step-card">
+          <div class="step-icon">1</div>
+          <div class="step-num">01</div>
+          <h5>Search</h5>
+          <p>Enter your source, destination and travel date to find available buses.</p>
+        </div>
+        <div class="col-md-1 text-center step-arrow d-none d-md-block">→</div>
+        <div class="col-md-3 text-center step-card">
+          <div class="step-icon"></div>
+          <div class="step-num">02</div>
+          <h5>Choose Seat</h5>
+          <p>Pick your preferred seat from the interactive seat map layout.</p>
+        </div>
+        <div class="col-md-1 text-center step-arrow d-none d-md-block">→</div>
+        <div class="col-md-3 text-center step-card">
+          <div class="step-icon"></div>
+          <div class="step-num">03</div>
+          <h5>Pay and Confirm</h5>
+          <p>Complete secure payment and receive instant e-ticket on your email.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonial-section">
+    <div class="container">
+      <div class="section-header text-center">
+        <div class="section-tag">What Travelers Say</div>
+        <h2>Real Reviews</h2>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="review-card">
+            <div class="stars">★★★★★</div>
+            <p>"Super easy to book! Got my ticket in under 2 minutes. Loved the seat selection feature."</p>
+            <div class="reviewer">— Priya M., Mumbai</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="review-card featured">
+            <div class="stars">★★★★★</div>
+            <p>"Best bus booking platform. Clean UI, instant confirmation and very affordable prices!"</p>
+            <div class="reviewer">— Rahul K., Pune</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="review-card">
+            <div class="stars">★★★★☆</div>
+            <p>"Finally a bus booking site that actually works well on mobile. Very happy with the service."</p>
+            <div class="reviewer">— Ananya S., Bangalore</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <div class="footer-brand"> BusGo</div>
+          <p class="footer-desc">India's most trusted online bus booking platform. Safe, affordable, and always on time.
+          </p>
+        </div>
+        <div class="col-lg-2">
+          <h6>Company</h6>
+          <ul class="footer-links">
+            <li><a href="about.html" target="_blank" rel="noopener noreferrer">About Us</a></li>
+            <li><a href="careers.html" target="_blank" rel="noopener noreferrer">Careers</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2">
+          <h6>Support</h6>
+          <ul class="footer-links">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="javascript:void(0)" onclick="openMyBookingsModal()">Cancellation</a></li>
+            <li id="footerLiveTrackItem" class="d-none"><a href="javascript:void(0)"
+                onclick="openLiveTrackingModal()">Track Booking (Google Map)</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4">
+          <h6>Newsletter</h6>
+          <p>Get exclusive deals in your inbox.</p>
+          <div class="newsletter-form">
+            <input type="email" placeholder="your@email.com" class="form-control mb-2" />
+            <button class="btn btn-primary w-100">Subscribe</button>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 BusGo. All rights reserved.</span>
+        <span>Privacy Policy · Terms of Service</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SEAT SELECTION MODAL -->
+  <div class="modal-overlay" id="seatModal" onclick="closeModalOnOverlay(event, 'seatModal')">
+    <div class="modal-box large" onclick="event.stopPropagation()">
+      <div class="modal-header-custom d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-light border d-md-none fw-bold" onclick="closeModal('seatModal')">←
+            Back</button>
+          <h4 id="seatModalTitle" class="m-0">Select Your Seat</h4>
+        </div>
+        <button class="modal-close" onclick="closeModal('seatModal')" title="Close">✕</button>
+      </div>
+      <div class="modal-body-custom">
+        <div class="row">
+          <div class="col-md-7">
+            <div class="bus-layout-container">
+              <div class="ladies-safety-badge p-2 mb-2 rounded border d-flex align-items-center justify-content-between"
+                style="background:#FFF1F2; border-color:#FECDD3 !important;">
+                <div>
+                  <strong style="color:#BE123C; font-size:12px;">Women-Safe Travel Partner</strong>
+                  <div style="font-size:11px; color:#9F1239;">Dedicated pink seats & safe adjacent co-passenger
+                    protection</div>
+                </div>
+                <span class="badge" style="background:#E11D48; color:#fff; font-size:10px;">Pink Seating Active</span>
+              </div>
+
+              <!-- Real-Time Seat Reservation Countdown Banner -->
+              <div id="seatLockTimerBanner" class="seat-lock-banner d-none mb-2.5 p-2 rounded d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge" style="background:#D97706; color:#fff; font-size:10px; font-weight:700;">Seat Locked</span>
+                  <span style="font-size:12px; color:#92400E; font-weight:600;">Time remaining: <strong id="seatLockCountdown" style="color:#B45309; font-size:13px; font-family:monospace;">08:00</strong></span>
+                </div>
+                <span class="small" style="font-size:10.5px; color:#B45309;">Auto-releases if unpaid</span>
+              </div>
+
+              <!-- Standard 2D Bus Seat Layout -->
+              <div class="bus-front">Driver Area</div>
+              <div class="seat-grid" id="seatGrid"></div>
+
+              <!-- Seat Legend -->
+              <div class="seat-legend d-flex gap-3 mt-3 flex-wrap">
+                <span><span class="seat-dot available"></span> Available</span>
+                <span><span class="seat-dot selected"></span> Selected</span>
+                <span><span class="seat-dot booked"></span> Booked (General)</span>
+                <span><span class="seat-dot ladies"></span> Ladies Reserved</span>
+                <span><span class="seat-dot ladies-booked"></span> Booked by Female</span>
+                <span><span class="seat-dot locked"></span> In Progress (Locked)</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-5">
+            <div class="booking-summary">
+              <h5>Booking Summary</h5>
+              <div class="summary-line"><span>Bus:</span><span id="sumBus">—</span></div>
+              <div class="summary-line"><span>Route:</span><span id="sumRoute">—</span></div>
+              <div class="summary-line"><span>Date:</span><span id="sumDate">—</span></div>
+              <div class="summary-line"><span>Departure:</span><span id="sumDeparture"
+                  class="fw-bold text-primary">—</span></div>
+              <div class="summary-line"><span>Arrival:</span><span id="sumArrival" class="fw-bold text-success">—</span>
+              </div>
+              <div class="summary-line"><span>Seats:</span><span id="sumSeats">None</span></div>
+              <div class="summary-line total"><span>Total Payable:</span><span id="sumTotal">₹0</span></div>
+
+              <div class="mt-3">
+                <!-- Feature 4: Boarding (Pickup) & Dropping Points -->
+                <div class="row g-2 mb-2">
+                  <div class="col-6">
+                    <label class="form-label small fw-semibold mb-1">Boarding Point</label>
+                    <select class="form-select custom-input form-select-sm" id="boardingPointSelect">
+                      <option value="">Select Boarding</option>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label small fw-semibold mb-1">Dropping Point</label>
+                    <select class="form-select custom-input form-select-sm" id="droppingPointSelect">
+                      <option value="">Select Dropping</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Gender Selection for Ladies Safety Protection -->
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold mb-1">Passenger Gender (For Safe Seating)</label>
+                  <div class="d-flex gap-2">
+                    <button type="button"
+                      class="btn btn-sm btn-outline-secondary flex-fill fw-semibold gender-btn active" id="genderFemale"
+                      onclick="selectPassengerGender('Female', this)">
+                      Female (Ladies Seating)
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary flex-fill fw-semibold gender-btn"
+                      id="genderMale" onclick="selectPassengerGender('Male', this)">
+                      Male
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary flex-fill fw-semibold gender-btn"
+                      id="genderOther" onclick="selectPassengerGender('Other', this)">
+                      Other
+                    </button>
+                  </div>
+                </div>
+
+                <label class="form-label mb-1">Passenger Name</label>
+                <input type="text" class="form-control custom-input mb-2" id="passengerName" placeholder="Full name" />
+                <label class="form-label mb-1">Phone</label>
+                <input type="tel" class="form-control custom-input mb-2" id="passengerPhone"
+                  placeholder="+91 XXXXXXXXXX" />
+                <label class="form-label mb-1">Email (Official E-Ticket with QR will be sent here)</label>
+                <input type="email" class="form-control custom-input mb-3" id="passengerEmail"
+                  placeholder="email@example.com" />
+
+                <!-- Seat Selection Alert Banner -->
+                <div id="seatSelectionAlert" class="seat-alert-banner d-none mb-3">
+                  <span class="seat-alert-icon"></span>
+                  <div>
+                    <div style="font-weight:700;">Please select at least 1 seat!</div>
+                    <div style="font-size:11px; font-weight:normal; opacity:0.85;">Select your preferred seat from the
+                      bus layout.</div>
+                  </div>
+                </div>
+
+                <button class="btn btn-primary w-100 py-2 fw-bold" onclick="proceedToPayment()">Proceed to
+                  Payment</button>
+                <button class="btn btn-outline-secondary w-100 mt-2" onclick="closeModal('seatModal')">✕ Cancel &
+                  Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE 360° PASSENGER CABIN SIMULATOR & 3D SEAT MODAL (DISABLED) -->
+  <div class="modal-overlay d-none" id="seat3DModal" style="display:none !important;" onclick="closeModalOnOverlay(event, 'seat3DModal')">
+    <div class="modal-box large" onclick="event.stopPropagation()" style="max-width: 960px; width: 96vw;">
+      <div class="modal-header-custom d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-sm btn-light border fw-bold" onclick="closeSingleSeat3DModal()">&larr;
+            Back to Seats</button>
+          <div>
+            <h4 class="m-0" id="singleSeat3DModalTitle"
+              style="font-size: 1.15rem; font-weight: 800; font-family: var(--font-head);">Seat 12W &mdash; Bus Interior
+              360&deg; (Passenger POV)</h4>
+            <div class="small text-muted" id="singleSeat3DModalSubtitle" style="font-size: 11px;">First-person passenger
+              perspective from Seat 12W &bull; Drag or use WASD / Arrow keys to explore cabin</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeSingleSeat3DModal()" title="Close">&times;</button>
+      </div>
+      <div class="modal-body-custom p-3">
+        <!-- Mode Selection Tabs & Simulator Controls -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2 pb-1 border-bottom">
+          <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-primary fw-bold px-3" id="btnModeVR360"
+              onclick="SingleSeat3DViewer.setViewMode('vr360')">
+              360&deg; Cabin Camera (Game View)
+            </button>
+            <button type="button" class="btn btn-outline-secondary fw-bold px-3" id="btnMode3DModel"
+              onclick="SingleSeat3DViewer.setViewMode('model3d')">
+              3D Seat Model
+            </button>
+          </div>
+          <div class="d-flex align-items-center gap-1.5">
+            <button type="button" class="btn btn-sm btn-outline-dark fw-bold py-1 px-2.5" id="btnToggleFullscreen"
+              onclick="SingleSeat3DViewer.toggleFullscreen()" style="font-size: 11px;">
+              Fullscreen View
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-dark fw-bold py-1 px-2.5" id="btnAutoTourToggle"
+              onclick="SingleSeat3DViewer.toggleAutoTour()" style="font-size: 11px;">
+              Pause 360&deg; Tour
+            </button>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <!-- Visual 360° Cabin Simulator Column -->
+          <div class="col-lg-8">
+            <div class="position-relative overflow-hidden rounded border shadow-sm" id="singleSeat3DContainer"
+              style="background:#0b1120; min-height: 410px; height: 410px;">
+              <!-- Interactive 360° Cabin Canvas -->
+              <canvas id="singleSeat3DCanvas"
+                style="width: 100%; height: 100%; display: block; cursor: grab; background: #0b1120; touch-action: none; outline: none;"></canvas>
+              <!-- Interactive 3D Model WebGL Canvas -->
+              <canvas id="singleSeatModelCanvas"
+                style="width: 100%; height: 100%; display: none; cursor: grab; background: #0b1120; touch-action: none; outline: none;"></canvas>
+
+              <!-- Dynamic Hotspots Interactive Layer -->
+              <div id="singleSeat3DHotspotLayer"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden;">
+              </div>
+
+              <!-- Top HUD: Seat Number, Compass & Availability Pill -->
+              <div
+                class="position-absolute top-0 start-0 end-0 p-2.5 d-flex justify-content-between align-items-center flex-wrap gap-1"
+                style="background: linear-gradient(rgba(11, 17, 32, 0.88), transparent); pointer-events: none; z-index: 5;">
+                <div class="py-1 px-2.5 rounded text-white"
+                  style="background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); font-size: 11px; border: 1px solid rgba(255,255,255,0.2);">
+                  <strong id="singleSeat3DHudBadge">Seat 12W &bull; Window Elite (Passenger POV)</strong>
+                </div>
+                <div class="py-1 px-2.5 rounded text-white text-center" id="singleSeat3DCompassBadge"
+                  style="background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); font-size: 11px; border: 1px solid rgba(255,255,255,0.2);">
+                  Sightline: Window Vista (15&deg;)
+                </div>
+                <div class="py-1 px-3 rounded text-success fw-bold d-flex align-items-center gap-1.5"
+                  id="singleSeat3DStatusPill"
+                  style="background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); font-size: 11px; border: 1px solid rgba(16, 185, 129, 0.4);">
+                  <span
+                    style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#10b981;"></span>
+                  <span id="singleSeat3DStatusText">Selected</span>
+                </div>
+              </div>
+
+              <!-- Central Drag Instructions Hint (Fades on interaction) -->
+              <div
+                class="position-absolute top-50 start-50 translate-middle py-1.5 px-3 rounded text-white text-center shadow-lg"
+                id="singleSeat3DDragHint"
+                style="background: rgba(15, 23, 42, 0.82); backdrop-filter: blur(6px); font-size: 11.5px; border: 1px solid rgba(255,255,255,0.25); pointer-events: none; transition: opacity 0.4s; z-index: 5;">
+                &larr; Drag 360&deg; &bull; WASD / Arrow Keys to Look &bull; Pinch/Scroll to Zoom &rarr;
+              </div>
+
+              <!-- Bottom Floating Angle Indicator -->
+              <div class="position-absolute bottom-0 start-0 end-0 p-2 text-center text-white"
+                style="background: linear-gradient(transparent, rgba(11, 17, 32, 0.94)); pointer-events: none; font-size: 11px; z-index: 5;">
+                <span id="singleSeat3DAngleText">Bus Simulator POV: Look around driver cockpit, panoramic window, center
+                  aisle, and legroom</span>
+              </div>
+            </div>
+
+            <!-- Quick Angle Presets & Controls Bar -->
+            <div class="d-flex flex-wrap gap-1.5 mt-2 justify-content-between align-items-center">
+              <div class="d-flex flex-wrap gap-1">
+                <button type="button" class="btn btn-sm btn-outline-dark py-1 px-2.5 fw-bold" style="font-size:11px;"
+                  onclick="SingleSeat3DViewer.setPreset('window')">Window Vista</button>
+                <button type="button" class="btn btn-sm btn-outline-dark py-1 px-2.5 fw-bold" style="font-size:11px;"
+                  onclick="SingleSeat3DViewer.setPreset('cockpit')">Driver &amp; Road</button>
+                <button type="button" class="btn btn-sm btn-outline-dark py-1 px-2.5 fw-bold" style="font-size:11px;"
+                  onclick="SingleSeat3DViewer.setPreset('aisle')">Cabin Aisle</button>
+                <button type="button" class="btn btn-sm btn-outline-dark py-1 px-2.5 fw-bold" style="font-size:11px;"
+                  onclick="SingleSeat3DViewer.setPreset('legroom')">Legroom &amp; Floor</button>
+                <button type="button" class="btn btn-sm btn-outline-dark py-1 px-2.5 fw-bold" style="font-size:11px;"
+                  onclick="SingleSeat3DViewer.setPreset('ac')">Overhead AC</button>
+                <button type="button" class="btn btn-sm btn-outline-dark py-1 px-2 fw-bold" style="font-size:11px;"
+                  onclick="SingleSeat3DViewer.zoomDelta(-6)" title="Zoom in">Zoom +</button>
+                <button type="button" class="btn btn-sm btn-outline-dark py-1 px-2 fw-bold" style="font-size:11px;"
+                  onclick="SingleSeat3DViewer.zoomDelta(6)" title="Zoom out">Zoom -</button>
+              </div>
+              <div class="d-flex align-items-center gap-1.5">
+                <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2 fw-bold"
+                  style="font-size: 11px;" onclick="SingleSeat3DViewer.toggleFullscreen()"
+                  title="Toggle full screen">Fullscreen</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Specifications & Action Column -->
+          <div class="col-lg-4">
+            <div class="p-3 bg-light rounded border h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h5 class="m-0 fw-bold text-dark" id="modal3DSeatTitle">Seat 12 &mdash; Window Elite</h5>
+                  <span class="badge bg-success py-1 px-2" id="modal3DSeatBadge"
+                    style="font-size: 10px;">Selected</span>
+                </div>
+                <div class="small text-secondary mb-2.5" id="modal3DSeatSubtitle">
+                  Premium Window Berth with Direct Highway Vista
+                </div>
+
+                <!-- Interactive Hotspot Highlight Card -->
+                <div class="alert alert-light border py-2 px-2.5 mb-2.5" id="modal3DHotspotCard"
+                  style="font-size: 11.5px; background: #ffffff;">
+                  <div class="d-flex align-items-center justify-content-between mb-1">
+                    <strong id="modal3DHotspotTitle" class="text-primary">Feature: Panoramic Window Vista</strong>
+                    <span class="badge bg-primary text-white" id="modal3DHotspotAngleBadge"
+                      style="font-size: 9.5px;">15&deg; Heading</span>
+                  </div>
+                  <div id="modal3DHotspotDesc" class="text-muted" style="line-height: 1.35;">
+                    99% UV-cut double glazed insulated window offering unobstructed highway landscape vistas.
+                  </div>
+                </div>
+
+                <div class="spec-list mb-3">
+                  <div class="d-flex justify-content-between py-1 border-bottom small">
+                    <span class="text-muted">Seat Classification:</span>
+                    <strong class="text-dark" id="modal3DSpecType">Window Recliner</strong>
+                  </div>
+                  <div class="d-flex justify-content-between py-1 border-bottom small">
+                    <span class="text-muted">Pitch &amp; Legroom:</span>
+                    <strong class="text-dark" id="modal3DSpecLegroom">38 Inches (High Recline)</strong>
+                  </div>
+                  <div class="d-flex justify-content-between py-1 border-bottom small">
+                    <span class="text-muted">Power &amp; USB:</span>
+                    <strong class="text-dark" id="modal3DSpecPower">30W USB-C + Type-A Fast</strong>
+                  </div>
+                  <div class="d-flex justify-content-between py-1 border-bottom small">
+                    <span class="text-muted">Climate Control:</span>
+                    <strong class="text-dark" id="modal3DSpecClimate">Independent Adjustable Louver</strong>
+                  </div>
+                  <div class="d-flex justify-content-between py-1 border-bottom small">
+                    <span class="text-muted">Lighting:</span>
+                    <strong class="text-dark">Warm LED Reading Spotlight</strong>
+                  </div>
+                  <div class="d-flex justify-content-between py-1 small">
+                    <span class="text-muted">Cabin Suspension:</span>
+                    <strong class="text-success">Pneumatic Air-Ride Comfort</strong>
+                  </div>
+                </div>
+
+                <div class="alert alert-info py-2 px-2.5 mb-2.5" style="font-size: 11px;">
+                  <strong>Comfort Guarantee:</strong> All BusGo luxury coaches feature pneumatic air suspension for
+                  smooth travel across Dharampuri, Dhamnod and Indore bypass.
+                </div>
+              </div>
+
+              <div>
+                <button class="btn btn-primary w-100 py-2 fw-bold mb-2" id="btnToggle3DSelection"
+                  onclick="confirm3DSeatSelectionAndReturn()">
+                  Confirm Seat &amp; Return to Map &rarr;
+                </button>
+                <button class="btn btn-outline-secondary w-100 py-1.5 small fw-bold" onclick="closeSingleSeat3DModal()">
+                  &larr; Back to Seats
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYMENT MODAL -->
+  <div class="modal-overlay" id="paymentModal" onclick="closeModalOnOverlay(event, 'paymentModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header-custom d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-light border fw-bold"
+            onclick="closeModal('paymentModal'); openModal('seatModal');">← Back to Seats</button>
+          <h4 class="m-0">Secure Payment</h4>
+        </div>
+        <button class="modal-close" onclick="closeModal('paymentModal')" title="Close">✕</button>
+      </div>
+      <div class="modal-body-custom">
+        <div class="payment-amount mb-3 text-center">
+          <div class="pay-label">Total Payable Fare</div>
+          <div class="pay-amount" id="payAmount">₹0</div>
+        </div>
+
+        <div class="payment-methods mb-3">
+          <label class="pay-method active" id="pm-phonepe" onclick="selectPayMethod('phonepe')">
+            <div class="d-flex justify-content-between align-items-center">
+              <span><strong style="font-size:1.05rem;">PhonePe / UPI QR</strong></span>
+              <span class="badge bg-dark" style="font-size:10px;">Instant</span>
+            </div>
+          </label>
+          <label class="pay-method" id="pm-upi" onclick="selectPayMethod('upi')">Other UPI (GPay / Paytm)</label>
+          <label class="pay-method" id="pm-card" onclick="selectPayMethod('card')">Credit / Debit Card</label>
+          <label class="pay-method" id="pm-netbank" onclick="selectPayMethod('netbank')">Net Banking</label>
+        </div>
+
+        <!-- PHONEPE FORM -->
+        <div id="payFormPhonepe">
+          <div class="phonepe-card text-center mb-3">
+            <div class="d-flex align-items-center justify-content-between pb-2 border-bottom mb-3">
+              <div class="d-flex align-items-center gap-2">
+                <span style="font-size:1.2rem;"></span>
+                <strong class="text-dark" style="font-size:1.05rem;">UPI & QR Payment</strong>
+              </div>
+              <span class="badge bg-success-subtle text-success border border-success-subtle">Instant
+                Verification</span>
+            </div>
+
+            <div class="d-flex gap-2 justify-content-center mb-3">
+              <button type="button" class="btn btn-sm btn-phonepe-tab active" id="btnPhonePeQr"
+                onclick="switchPhonePeMode('qr')">QR Scanner</button>
+              <button type="button" class="btn btn-sm btn-phonepe-tab" id="btnPhonePeUpi"
+                onclick="switchPhonePeMode('upi')">Enter UPI ID</button>
+            </div>
+
+            <div id="phonepeQrContainer" class="py-1">
+              <div class="phonepe-white-scanner mb-2">
+                <div
+                  class="scanner-header d-flex justify-content-between align-items-center px-2 py-1 mb-2 border-bottom">
+                  <small class="text-secondary fw-semibold">BHIM UPI</small>
+                  <small class="fw-bold text-dark">PhonePe &bull; GPay</small>
+                </div>
+                <div class="scanner-frame">
+                  <span class="corner top-left"></span>
+                  <span class="corner top-right"></span>
+                  <span class="corner bottom-left"></span>
+                  <span class="corner bottom-right"></span>
+                  <img id="phonepeQrImage" src="" alt="Payment QR Code" class="scanner-qr-img" />
+                </div>
+                <div class="scanner-footer mt-2 pt-1 border-top">
+                  <div style="font-size:12px; font-weight:700; color:var(--text);">Scan with Any UPI App</div>
+                  <div style="font-size:10px; color:#6B7280;">PhonePe &bull; GPay &bull; Paytm &bull; BHIM</div>
+                </div>
+              </div>
+              <div class="text-muted small mt-2">Scan with any UPI app on your mobile: <strong id="phonepeQrAmount"
+                  class="text-dark" style="font-size:1.1rem;">₹0</strong></div>
+            </div>
+
+            <div id="phonepeUpiContainer" class="py-2 text-start" style="display:none;">
+              <label class="form-label small fw-bold text-secondary mb-1">Enter PhonePe Mobile Number or UPI ID</label>
+              <div class="input-group mb-2">
+                <input type="text" class="form-control custom-input" id="phonepeVpaInput"
+                  placeholder="e.g. 9876543210 or name@ybl" />
+                <button class="btn btn-dark px-3" type="button" onclick="verifyPhonePeVpa()">Verify</button>
+              </div>
+              <div class="d-flex gap-1 mb-2 flex-wrap">
+                <span class="badge bg-light text-dark border pointer" onclick="setPhonePeSuffix('@ybl')">@ybl</span>
+                <span class="badge bg-light text-dark border pointer" onclick="setPhonePeSuffix('@ibl')">@ibl</span>
+                <span class="badge bg-light text-dark border pointer" onclick="setPhonePeSuffix('@axl')">@axl</span>
+              </div>
+              <div id="phonepeVerifyStatus" class="small text-success fw-bold" style="display:none;">Verified UPI
+                Account Linked</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OTHER UPI FORM -->
+        <div id="payFormUpi" style="display:none;">
+          <label class="form-label small fw-bold text-secondary mb-1">UPI ID (VPA)</label>
+          <input class="form-control custom-input mb-2" id="otherUpiInput" placeholder="name@okaxis, name@paytm" />
+          <small class="text-muted">Payment request will be sent to your UPI app.</small>
+        </div>
+
+        <!-- CARD FORM -->
+        <div id="payFormCard" style="display:none;">
+          <input class="form-control custom-input mb-2" placeholder="Card Number (16 digits)" maxlength="19"
+            oninput="formatCard(this)" />
+          <div class="row g-2">
+            <div class="col-6"><input class="form-control custom-input" placeholder="MM/YY" maxlength="5" /></div>
+            <div class="col-6"><input class="form-control custom-input" placeholder="CVV" maxlength="3"
+                type="password" /></div>
+          </div>
+          <input class="form-control custom-input mt-2" placeholder="Cardholder Name" />
+        </div>
+
+        <!-- NET BANKING FORM -->
+        <div id="payFormNetbank" style="display:none;">
+          <select class="form-select custom-input">
+            <option>Select Bank</option>
+            <option>State Bank of India (SBI)</option>
+            <option>HDFC Bank</option>
+            <option>ICICI Bank</option>
+            <option>Axis Bank</option>
+            <option>Kotak Mahindra Bank</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary w-100 mt-3" id="payNowBtn" onclick="confirmPayment()"
+          style="font-weight:700; padding:12px;">Pay Now ➔</button>
+        <button class="btn btn-outline-secondary w-100 mt-2" onclick="closeModal('paymentModal')">✕ Cancel
+          Payment</button>
+        <p class="text-center text-muted mt-2 mb-0" style="font-size:12px;">256-bit SSL Encrypted &nbsp;|&nbsp; 100%
+          Secure Payment</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS MODAL -->
+  <div class="modal-overlay" id="successModal" onclick="closeModalOnOverlay(event, 'successModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header-custom d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <h5 class="m-0 fw-bold text-success">Booking Confirmed</h5>
+        </div>
+        <button class="modal-close" onclick="closeModal('successModal'); resetAll();" title="Close">✕</button>
+      </div>
+      <div class="modal-body-custom text-center py-4">
+        <div class="success-anim"></div>
+        <h4 class="mt-2 mb-1 fw-bold">Booking Confirmed!</h4>
+        <p class="text-muted small mb-3">Your e-ticket has been generated and confirmed.</p>
+
+        <!-- GOOGLE MAPS LIVE TRACKING HERO BANNER -->
+        <div class="tracking-prompt-card p-3 mb-3 border rounded text-start shadow-sm"
+          style="background: linear-gradient(135deg, #f0fdf4, #e6fffa); border: 2px solid #86efac !important;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge bg-success d-flex align-items-center gap-1 py-1 px-2">
+              <span class="live-pulse-dot" style="background:#fff;"></span> Live GPS Signal Active
+            </span>
+            <span class="badge bg-success-subtle text-success border border-success fw-bold">Ready</span>
+          </div>
+          <div class="fw-bold text-dark d-flex align-items-center gap-2" style="font-size: 0.95rem;">
+            <strong>Live Bus Tracking (Google Map View)</strong>
+          </div>
+          <p class="text-muted small mb-2 mt-1">
+            You can track your live bus route in real-time on Google Maps.
+          </p>
+          <button
+            class="btn btn-success w-100 py-2 fw-bold d-flex align-items-center justify-content-center gap-2 shadow"
+            onclick="closeModal('successModal'); openLiveTrackingModal();">
+            <strong>Track Live Bus on Google Map</strong> ➔
+          </button>
+        </div>
+
+        <div class="ticket-card" id="ticketCard"></div>
+
+        <!-- Feature 1: Print & Download PDF E-Ticket -->
+        <div class="d-flex gap-2 mt-2">
+          <button
+            class="btn btn-primary flex-fill py-2 fw-bold d-flex align-items-center justify-content-center gap-1 shadow-sm"
+            onclick="downloadTicketPdf()">
+            Download PDF Ticket
+          </button>
+          <button
+            class="btn btn-outline-dark flex-fill py-2 fw-semibold d-flex align-items-center justify-content-center gap-1"
+            onclick="printETicket()">
+            Print Ticket
+          </button>
+        </div>
+        <div class="alert alert-success py-2 px-3 mt-2 text-start small d-flex align-items-center gap-2"
+          style="font-size:12px;">
+
+          <span>Original E-Ticket with QR code has been dispatched to your Gmail!</span>
+        </div>
+
+        <div class="d-flex gap-2 mt-3 flex-column">
+          <button class="btn btn-outline-primary" onclick="closeModal('successModal'); openMyBookingsModal()">View All
+            Bookings</button>
+          <button class="btn btn-primary" onclick="closeModal('successModal'); resetAll()">Book Another Trip</button>
+          <button class="btn btn-outline-secondary w-100" onclick="closeModal('successModal'); resetAll()">✕ Close
+            Window</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE GOOGLE MAPS TRACKING MODAL -->
+  <div class="modal-overlay live-tracker-overlay" id="liveTrackingModal"
+    onclick="closeModalOnOverlay(event, 'liveTrackingModal')">
+    <div class="tracker-modal-box" onclick="event.stopPropagation()">
+
+      <!-- GOOGLE MAPS SIGNATURE NAVIGATION TOP BAR -->
+      <div class="gmaps-nav-header">
+        <div class="gmaps-turn-badge">
+          <span class="turn-arrow" id="gmapsTurnIcon">⬆️</span>
+          <div class="turn-text-group">
+            <div class="turn-instruction" id="gmapsTurnInstruction">Head northeast on Expressway</div>
+            <div class="turn-sub" id="gmapsTurnSub">Next Stop: Calculating...</div>
+          </div>
+        </div>
+        <div class="gmaps-header-right">
+          <div class="speed-pill">
+            <span class="speed-val" id="gmapsSpeedVal">68</span>
+            <span class="speed-unit">km/h</span>
+          </div>
+          <div class="speed-limit-badge" title="Highway Speed Limit">80</div>
+          <button class="gmaps-btn-icon" id="gmapsAudioToggle" onclick="toggleNavAudio()"
+            title="Toggle Navigation Audio Chime">Sound</button>
+          <button class="gmaps-btn-icon" onclick="toggleTrackerFullscreen()" title="Toggle Fullscreen">Full</button>
+          <button class="btn btn-danger btn-sm fw-bold px-3 py-1 shadow-sm" onclick="closeLiveTrackerModal()"
+            title="Close Live Tracking" style="border-radius:20px; font-size:12px;">✕ Close</button>
+        </div>
+      </div>
+
+      <!-- MAIN TRACKER CONTAINER (MAP + SIDEBAR) -->
+      <div class="tracker-content-wrapper">
+
+        <!-- INTERACTIVE MAP CONTAINER -->
+        <div class="map-view-container">
+          <div id="busLiveMap" class="bus-live-map"></div>
+
+          <!-- FLOATING GOOGLE MAPS LAYER SWITCHER (Bottom-Left) -->
+          <div class="map-float-layers">
+            <button class="map-layer-btn active" id="layerBtnStreets" onclick="switchMapLayer('streets')"
+              title="Google Streets View">
+              Streets
+            </button>
+            <button class="map-layer-btn" id="layerBtnSat" onclick="switchMapLayer('satellite')"
+              title="Google Satellite Hybrid View">
+              Satellite
+            </button>
+            <button class="map-layer-btn" id="layerBtnTerrain" onclick="switchMapLayer('terrain')"
+              title="Google Terrain View">
+              Terrain
+            </button>
+          </div>
+
+          <!-- SIMULATION CONTROLS (Desktop only, hidden completely on mobile) -->
+          <div class="sim-speed-controls d-none d-md-flex">
+            <button class="sim-play-btn" id="simPlayPauseBtn" onclick="toggleSimulationPlayPause()"
+              title="Play / Pause Simulation">⏸️ Pause Bus</button>
+          </div>
+
+          <!-- FLOATING MAP ACTION BUTTONS (Bottom-Right) -->
+          <div class="map-float-actions">
+            <button class="map-action-fab active" id="followBusBtn" onclick="toggleFollowBus()"
+              title="Recenter and Follow Live Bus">
+              Center
+              <span class="fab-text">Follow Bus</span>
+            </button>
+            <div class="map-zoom-group">
+              <button class="zoom-btn" onclick="mapZoomIn()" title="Zoom In">+</button>
+              <button class="zoom-btn" onclick="mapZoomOut()" title="Zoom Out">−</button>
+            </div>
+          </div>
+
+          <!-- LIVE GPS STATUS OVERLAY -->
+          <div class="map-live-pill">
+            <span class="pulse-indicator"></span>
+            <span id="mapLiveStatusText">LIVE GPS TRACKING • ON TIME</span>
+          </div>
+        </div>
+
+        <!-- TRIP METRICS & STOPS SIDE PANEL -->
+        <div class="tracker-side-panel" id="trackerSidePanel">
+          <!-- HEADER -->
+          <div class="panel-section trip-header">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <span class="badge bg-primary-subtle text-primary fw-bold" id="trackerPnrBadge">PNR: --</span>
+                <h5 class="trip-operator mb-0 mt-1" id="trackerBusOperator">Bus Operator</h5>
+                <div class="trip-route-title" id="trackerRouteTitle">Origin ➔ Destination</div>
+              </div>
+              <div class="text-end">
+                <span class="badge bg-success-subtle text-success border border-success fw-bold px-2 py-1"
+                  id="trackerStatusBadge">On Highway</span>
+                <div class="text-muted small mt-1 font-monospace" id="trackerBusNumber">MH 12 AB 9942</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PROGRESS BAR -->
+          <div class="panel-section progress-section">
+            <div class="d-flex justify-content-between text-muted small mb-1">
+              <span id="trackerProgressOrigin">Origin</span>
+              <span class="fw-bold text-success" id="trackerProgressPct">0% Completed</span>
+              <span id="trackerProgressDest">Destination</span>
+            </div>
+            <div class="progress trip-progress-bar">
+              <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" id="trackerProgressBar"
+                role="progressbar" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- 4 KEY STATS CARDS -->
+          <div class="panel-section stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon"></div>
+              <div class="stat-meta">
+                <div class="stat-title">Time Left</div>
+                <div class="stat-value" id="trackerEtaValue">--</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"></div>
+              <div class="stat-meta">
+                <div class="stat-title">Remaining</div>
+                <div class="stat-value" id="trackerDistanceLeft">--</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"></div>
+              <div class="stat-meta">
+                <div class="stat-title">Est. Arrival</div>
+                <div class="stat-value" id="trackerArrivalClock">--</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"></div>
+              <div class="stat-meta">
+                <div class="stat-title">Current Halt</div>
+                <div class="stat-value text-truncate" id="trackerCurrentHalt" style="max-width:90px;">--</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature 8: LIVE HIGHWAY WEATHER & ROAD CONDITION WIDGET -->
+          <div class="panel-section weather-card p-3 rounded mb-3 shadow-sm border" id="trackerWeatherWidget">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="small fw-bold text-uppercase text-secondary"
+                style="font-size:11px; letter-spacing:0.5px;">Highway Weather & Road Forecast</span>
+              <span class="badge bg-success-subtle text-success border border-success fw-semibold"
+                id="trackerRoadCondition">Road Clear & Safe</span>
+            </div>
+            <div class="d-flex align-items-center gap-3 mt-2">
+              <div class="weather-temp-badge" id="trackerWeatherIcon" style="font-size: 2.2rem; line-height: 1;"></div>
+              <div class="flex-grow-1">
+                <div class="fw-bold fs-5 d-flex align-items-center gap-2">
+                  <span id="trackerWeatherTemp" class="text-dark">28°C</span>
+                  <span class="fs-6 fw-normal text-muted" id="trackerWeatherCondition">Sunny & Pleasant</span>
+                </div>
+                <div class="text-muted small" id="trackerWeatherDetails" style="font-size: 11.5px;">Route: Express
+                  Highway • Wind: 14 km/h • Visibility: 10 km</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DRIVER PROFILE & ACTIONS -->
+          <div class="panel-section driver-card">
+            <div class="d-flex align-items-center gap-3">
+              <div class="driver-avatar"></div>
+              <div class="flex-grow-1">
+                <div class="fw-bold" id="trackerDriverName">Captain Kirtan</div>
+                <div class="text-muted small">Verified Senior Driver • 5.0 ★ (1,850+ trips)</div>
+                <div class="text-muted small">Contact: <a href="tel:+916264213958"
+                    class="text-primary fw-bold text-decoration-none">+91 6264213958</a></div>
+                <div class="text-muted small">Vehicle: <span id="trackerVehicleModel">Volvo B11R AC Sleeper</span></div>
+              </div>
+            </div>
+            <div class="driver-actions mt-3 d-flex gap-2">
+              <button class="btn btn-outline-primary btn-sm flex-fill" onclick="callDriverPrompt()">Call Driver</button>
+              <button class="btn btn-outline-danger btn-sm flex-fill" onclick="triggerSosModal()">Emergency SOS</button>
+              <button class="btn btn-outline-secondary btn-sm flex-fill" onclick="shareTrackingLink()">Share
+                Link</button>
+            </div>
+          </div>
+
+          <!-- LIVE STOPS TIMELINE -->
+          <div class="panel-section timeline-section">
+            <h6 class="timeline-title d-flex justify-content-between align-items-center mb-3">
+              <span>Route Stops & Schedule</span>
+              <small class="text-muted" id="timelineStopsCount">-- Stops</small>
+            </h6>
+            <div class="stops-timeline" id="trackerStopsTimeline">
+              <!-- Dynamically populated stops -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- MOBILE/TABLET BOTTOM EXIT BAR -->
+      <div class="tracker-mobile-exit-bar p-2 bg-dark d-flex gap-2 justify-content-between align-items-center">
+        <span class="text-white-50 small ps-2">BusGo Live Route Navigation</span>
+        <button class="btn btn-danger btn-sm fw-bold px-3 py-1" onclick="closeLiveTrackerModal()">✕ Exit Map & Go
+          Back</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DRIVER CONTACT MODAL -->
+  <div class="modal-overlay" id="driverContactModal" onclick="closeModalOnOverlay(event, 'driverContactModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header-custom">
+        <h4>Contact Driver / Conductor</h4>
+        <button class="modal-close" onclick="closeModal('driverContactModal')">✕</button>
+      </div>
+      <div class="modal-body-custom text-center py-4">
+        <div style="font-size: 3.5rem;"></div>
+        <h5 class="mt-2" id="driverContactName">Captain Kirtan</h5>
+        <p class="text-muted small">Assigned Driver • IntrCity SmartBus / Volvo (5.0 ★ Rated)</p>
+
+        <div class="alert alert-light border my-3 text-start small">
+          <div><strong>Driver Name:</strong> <span class="fw-bold text-dark">Captain Kirtan</span></div>
+          <div><strong>Mobile Number:</strong> <a href="tel:+916264213958"
+              class="fw-bold text-success text-decoration-none">+91 6264213958</a></div>
+          <div><strong>Bus Number:</strong> <span class="font-monospace" id="driverBusNumber">MH 12 AB 9942</span></div>
+          <div><strong>Current Highway:</strong> <span id="driverHighwayLocation">Approaching Express Toll</span></div>
+        </div>
+
+        <div class="d-flex gap-2 flex-column">
+          <a href="tel:+916264213958" class="btn btn-success py-2 fw-bold"
+            onclick="showToast('Calling Captain Kirtan (+91 6264213958)...', 'info')">
+            Call Driver (+91 6264213958)
+          </a>
+          <a href="https://wa.me/916264213958?text=Hello%20Captain%20Kirtan,%20I%20am%20a%20passenger%20on%20BusGo."
+            target="_blank" class="btn btn-outline-primary py-2 text-decoration-none text-center"
+            onclick="closeModal('driverContactModal')">
+            WhatsApp Captain Kirtan
+          </a>
+          <button class="btn btn-outline-secondary py-2" onclick="closeModal('driverContactModal')">✕ Close
+            Window</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOS EMERGENCY MODAL -->
+  <div class="modal-overlay" id="sosModal" onclick="closeModalOnOverlay(event, 'sosModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header-custom" style="background:#fef2f2; border-bottom:1px solid #fee2e2;">
+        <h4 style="color:#dc2626;">Passenger Emergency Support (SOS)</h4>
+        <button class="modal-close" onclick="closeModal('sosModal')">✕</button>
+      </div>
+      <div class="modal-body-custom py-4">
+        <div class="text-center mb-3">
+
+          <h6 class="fw-bold text-danger">24x7 Safety Assistance & Highway Patrol</h6>
+          <p class="text-muted small">Your location is synced with our live patrol safety team and 24x7 emergency
+            helpline.</p>
+        </div>
+
+        <div class="list-group mb-3">
+          <a href="tel:112"
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <div>
+              <strong>National Emergency Hotline</strong>
+              <div class="text-muted small">Police, Medical, Fire</div>
+            </div>
+            <span class="badge bg-danger rounded-pill px-3 py-2 fs-6">Dial 112</span>
+          </a>
+          <a href="tel:1033"
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <div>
+              <strong>National Highway Patrol Helpline</strong>
+              <div class="text-muted small">NHAI Highway Breakdown & Assistance</div>
+            </div>
+            <span class="badge bg-primary rounded-pill px-3 py-2 fs-6">Dial 1033</span>
+          </a>
+          <a href="tel:18001208888"
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <div>
+              <strong>BusGo 24x7 Control Room</strong>
+              <div class="text-muted small">Fleet Operations & Safety Escort</div>
+            </div>
+            <span class="badge bg-dark rounded-pill px-3 py-2 fs-6">1800-120-8888</span>
+          </a>
+        </div>
+
+        <button class="btn btn-danger w-100 py-2 fw-bold"
+          onclick="shareTrackingLink(); showToast('Emergency coordinates shared!', 'success');">
+          Broadcast Live GPS Coordinates to Emergency Contacts
+        </button>
+        <button class="btn btn-outline-secondary w-100 mt-2" onclick="closeModal('sosModal')">✕ Close Emergency
+          Window</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY BOOKINGS MODAL -->
+  <div class="modal-overlay" id="myBookingsModal" onclick="closeModalOnOverlay(event, 'myBookingsModal')">
+    <div class="modal-box large" onclick="event.stopPropagation()">
+      <div class="modal-header-custom">
+        <h4>My Booked Tickets (<span id="myBookingsCount">0</span>)</h4>
+        <button class="modal-close" onclick="closeModal('myBookingsModal')">✕</button>
+      </div>
+      <div class="modal-body-custom">
+        <!-- Search bookings by PNR or Gmail -->
+        <div class="mb-3">
+          <div class="input-group">
+            <input type="text" class="form-control" id="myBookingsSearchInput"
+              placeholder="Search booking by PNR or Gmail / Mobile..." oninput="filterMyBookings()"
+              onkeypress="if(event.key==='Enter') filterMyBookings(true)" />
+            <button class="btn btn-primary px-3 fw-semibold" type="button"
+              onclick="filterMyBookings(true)">Search</button>
+          </div>
+        </div>
+        <div id="myBookingsList"></div>
+        <div class="mt-3">
+          <button class="btn btn-outline-secondary w-100" onclick="closeModal('myBookingsModal')">✕ Close My
+            Bookings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature 5: TRIP & DRIVER REVIEW MODAL -->
+  <div class="modal-overlay" id="reviewModal" onclick="closeModalOnOverlay(event, 'reviewModal')">
+    <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 480px;">
+      <div class="modal-header-custom d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+
+          <h5 class="m-0 fw-bold">Rate Trip & Captain Kirtan</h5>
+        </div>
+        <button class="modal-close" onclick="closeModal('reviewModal')">✕</button>
+      </div>
+      <div class="modal-body-custom pt-3">
+        <div class="text-center p-3 mb-3 rounded bg-light border">
+          <h6 class="fw-bold mb-1" id="reviewBusOperator">Bus Operator</h6>
+          <div class="text-muted small" id="reviewRouteText">Origin ➔ Destination</div>
+          <div class="badge bg-primary-subtle text-primary mt-1" id="reviewPnrBadge">PNR: --</div>
+        </div>
+
+        <!-- Overall Trip Star Rating -->
+        <div class="text-center mb-3">
+          <label class="form-label small fw-bold text-secondary mb-1">Overall Trip Rating</label>
+          <div class="star-rating-container d-flex justify-content-center gap-2 fs-2" id="starRatingGroup">
+            <span class="star-item" data-value="1" onclick="setTripRating(1)" onmouseover="hoverTripRating(1)"
+              onmouseout="resetHoverTripRating()">★</span>
+            <span class="star-item" data-value="2" onclick="setTripRating(2)" onmouseover="hoverTripRating(2)"
+              onmouseout="resetHoverTripRating()">★</span>
+            <span class="star-item" data-value="3" onclick="setTripRating(3)" onmouseover="hoverTripRating(3)"
+              onmouseout="resetHoverTripRating()">★</span>
+            <span class="star-item" data-value="4" onclick="setTripRating(4)" onmouseover="hoverTripRating(4)"
+              onmouseout="resetHoverTripRating()">★</span>
+            <span class="star-item" data-value="5" onclick="setTripRating(5)" onmouseover="hoverTripRating(5)"
+              onmouseout="resetHoverTripRating()">★</span>
+          </div>
+          <small class="fw-bold text-warning" id="tripRatingText">Click on stars to rate</small>
+        </div>
+
+        <!-- Driver Performance Rating (Captain Kirtan) -->
+        <div class="mb-3">
+          <label class="form-label small fw-bold text-secondary mb-1"> Driver Performance (Captain Kirtan)</label>
+          <select class="form-select custom-input form-select-sm" id="driverRatingScore">
+            <option value="5">⭐⭐⭐⭐⭐ Excellent (Safe driving, punctual, helpful)</option>
+            <option value="4">⭐⭐⭐⭐ Very Good (Smooth highway journey)</option>
+            <option value="3">⭐⭐⭐ Good (Satisfactory)</option>
+            <option value="2">⭐⭐ Average</option>
+            <option value="1">⭐ Poor</option>
+          </select>
+        </div>
+
+        <!-- Written Review -->
+        <div class="mb-3">
+          <label class="form-label small fw-bold text-secondary mb-1">Your Feedback & Comments</label>
+          <textarea class="form-control custom-input" id="reviewCommentInput" rows="3"
+            placeholder="Share your experience (bus cleanliness, AC cooling, timing, Captain Kirtan's driving)..."></textarea>
+        </div>
+
+        <input type="hidden" id="reviewTargetPnr" value="" />
+
+        <button class="btn btn-warning w-100 py-2 fw-bold shadow-sm text-dark mb-2" onclick="submitPassengerReview()">
+          Submit Rating & Feedback
+        </button>
+        <button class="btn btn-outline-secondary w-100" onclick="closeModal('reviewModal')">✕ Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal-overlay" id="loginModal" onclick="closeModalOnOverlay(event, 'loginModal')">
+    <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 420px;">
+      <div class="modal-header-custom d-flex justify-content-between align-items-center">
+        <div>
+          <h4 class="m-0 fw-bold text-dark">Welcome Back</h4>
+          <small class="text-muted">Login with your Gmail or Mobile Number</small>
+        </div>
+        <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+      </div>
+
+      <div class="modal-body-custom pt-3">
+        <div id="loginAuthRequiredBanner" class="alert alert-warning py-2 px-3 small border-0 mb-3 d-none">
+          <strong>Login Required:</strong> Please Login or Sign Up first to book seats.
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-bold text-secondary">Gmail or Mobile Number</label>
+          <div class="input-group">
+
+            <input class="form-control" id="loginIdentifierInput" type="text"
+              placeholder="e.g. kirtan@gmail.com or 6264213958" required />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <label class="form-label small fw-bold text-secondary">Password</label>
+            <a href="javascript:void(0)" class="small text-primary text-decoration-none fw-semibold"
+              onclick="openForgotPasswordModal()">Forgot Password?</a>
+          </div>
+          <div class="input-group">
+
+            <input class="form-control" id="loginPasswordInput" type="password" placeholder="Enter your password"
+              required />
+          </div>
+        </div>
+
+        <button class="btn btn-primary w-100 py-2 fw-bold shadow-sm mb-3" id="btnLoginSubmit"
+          onclick="loginUserWithPassword()">
+          Login
+        </button>
+
+        <div class="text-center pt-2 border-top">
+          <span class="text-muted small">New to BusGo? </span>
+          <a href="#" class="fw-bold text-primary text-decoration-none small"
+            onclick="closeModal('loginModal'); openModal('registerModal')">
+            Sign Up (Create Account)
+          </a>
+        </div>
+        <button class="btn btn-outline-secondary w-100 mt-2" onclick="closeModal('loginModal')">✕ Cancel &
+          Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORGOT PASSWORD MODAL -->
+  <div class="modal-overlay" id="forgotPasswordModal" onclick="closeModalOnOverlay(event, 'forgotPasswordModal')">
+    <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 440px;">
+      <div class="modal-header-custom d-flex justify-content-between align-items-center">
+        <div>
+          <h4 class="m-0 fw-bold text-dark">Reset Password</h4>
+          <small class="text-muted">Recover your BusGo account</small>
+        </div>
+        <button class="modal-close" onclick="closeModal('forgotPasswordModal')">✕</button>
+      </div>
+
+      <div class="modal-body-custom pt-3">
+        <!-- STEP 1: Enter Identifier -->
+        <div id="forgotStep1">
+          <p class="text-muted small mb-3">
+            Enter your registered <strong>Gmail address</strong> or <strong>Mobile number</strong>. We'll send a 6-digit
+            verification OTP to your Gmail.
+          </p>
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Gmail or Mobile Number</label>
+            <div class="input-group">
+
+              <input class="form-control" id="forgotIdentifierInput" type="text"
+                placeholder="e.g. name@gmail.com or 9876543210" required />
+            </div>
+          </div>
+
+          <button class="btn btn-primary w-100 py-2 fw-bold shadow-sm mb-3" id="btnSendForgotOtp"
+            onclick="sendForgotPasswordOtp()">
+            Send Verification OTP
+          </button>
+        </div>
+
+        <!-- STEP 2: Enter OTP & Set New Password -->
+        <div id="forgotStep2" class="d-none">
+          <div class="alert alert-info py-2 px-3 small border-0 mb-3">
+            <strong>OTP Sent:</strong> We've sent a 6-digit OTP to <span id="forgotMaskedEmail" class="fw-bold">your
+              Gmail</span>.
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Enter 6-Digit OTP</label>
+            <input class="form-control text-center font-monospace fs-4 fw-bold letter-spacing-2" id="forgotOtpInput"
+              type="text" maxlength="6" placeholder="000000" required />
+            <div class="d-flex justify-content-between align-items-center mt-1">
+              <small class="text-muted">Valid for 10 minutes</small>
+              <button class="btn btn-link p-0 text-decoration-none small fw-bold" id="btnResendForgotOtp"
+                onclick="sendForgotPasswordOtp(true)">Resend OTP</button>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">New Password</label>
+            <div class="input-group">
+
+              <input class="form-control" id="forgotNewPasswordInput" type="password"
+                placeholder="At least 4 characters" required />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Confirm New Password</label>
+            <div class="input-group">
+
+              <input class="form-control" id="forgotConfirmPasswordInput" type="password"
+                placeholder="Re-enter new password" required />
+            </div>
+          </div>
+
+          <button class="btn btn-success w-100 py-2 fw-bold shadow-sm mb-3" id="btnSubmitResetPassword"
+            onclick="submitResetPassword()">
+            Reset & Save Password
+          </button>
+        </div>
+
+        <div class="text-center pt-2 border-top">
+          <button class="btn btn-link text-decoration-none small fw-bold text-secondary"
+            onclick="closeModal('forgotPasswordModal'); openModal('loginModal');">
+            ← Back to Login
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIGN UP (REGISTER) MODAL WITH GMAIL OTP -->
+  <div class="modal-overlay" id="registerModal" onclick="closeModalOnOverlay(event, 'registerModal')">
+    <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 450px;">
+      <div class="modal-header-custom d-flex justify-content-between align-items-center">
+        <div>
+          <h4 class="m-0 fw-bold text-dark">Create Account</h4>
+          <small class="text-muted">Register and verify via Gmail OTP</small>
+        </div>
+        <button class="modal-close" onclick="closeModal('registerModal')">✕</button>
+      </div>
+
+      <div class="modal-body-custom pt-3">
+        <div id="signupAuthRequiredBanner" class="alert alert-warning py-2 px-3 small border-0 mb-3 d-none">
+          <strong>Sign Up Required:</strong> Please create an account and verify your Gmail OTP to proceed with seat
+          booking.
+        </div>
+        <!-- STEP 1: Enter Registration Details & Set Password -->
+        <div id="signupFormStep">
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Full Name</label>
+            <input class="form-control" id="regName" placeholder="Enter your full name" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Mobile Number</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light">+91</span>
+              <input class="form-control" id="regPhone" type="tel" placeholder="e.g. 6264213958" maxlength="10"
+                required />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Gmail Address</label>
+            <div class="input-group">
+
+              <input class="form-control" id="regEmail" type="email" placeholder="yourname@gmail.com" required />
+            </div>
+            <small class="text-muted" style="font-size: 11px;">Verification OTP will be sent to this Gmail.</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Set Password</label>
+            <div class="input-group">
+
+              <input class="form-control" id="regPassword" type="password" placeholder="Create a strong password"
+                required />
+            </div>
+          </div>
+
+          <button
+            class="btn btn-primary w-100 py-2 fw-bold shadow-sm mb-3 d-flex align-items-center justify-content-center gap-2"
+            id="btnSendSignupOtp" onclick="sendSignupOtp()">
+            <span>Send OTP to Gmail</span>
+          </button>
+        </div>
+
+        <!-- STEP 2: Enter 6-Digit OTP Sent to Gmail (Initially Hidden) -->
+        <div id="signupOtpStep" class="d-none">
+          <div class="alert alert-success py-2 px-3 small border-0 text-center mb-3">
+            <div>OTP sent to: <strong id="signupTargetEmail" class="text-dark">--</strong></div>
+            <a href="#" class="small text-decoration-none" onclick="backToSignupForm()">Change details</a>
+          </div>
+
+          <div class="mb-3 text-center">
+            <label class="form-label small fw-bold text-secondary">Enter 6-Digit OTP</label>
+            <input type="text" id="signupEnteredOtp" maxlength="6"
+              class="form-control text-center font-monospace fw-bold" style="font-size: 1.6rem; letter-spacing: 8px;"
+              placeholder="• • • • • •" autocomplete="one-time-code" />
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mb-3 small">
+            <span class="text-muted" id="signupTimerText">⏱️ Valid for: <strong
+                id="signupCountdown">01:00</strong></span>
+            <button class="btn btn-link btn-sm p-0 text-decoration-none" id="btnResendSignupOtp"
+              onclick="sendSignupOtp(true)" disabled>Resend OTP</button>
+          </div>
+
+          <button class="btn btn-success w-100 py-2 fw-bold shadow-sm mb-3" id="btnVerifySignupOtp"
+            onclick="verifySignupOtp()">
+            Verify OTP & Create Account
+          </button>
+        </div>
+
+        <div class="text-center pt-2 border-top">
+          <span class="text-muted small">Already have an account? </span>
+          <a href="#" class="fw-bold text-primary text-decoration-none small"
+            onclick="closeModal('registerModal'); openModal('loginModal')">
+            Login
+          </a>
+        </div>
+        <button class="btn btn-outline-secondary w-100 mt-2" onclick="closeModal('registerModal')">✕ Cancel &
+          Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN DASHBOARD MODAL (FOR ADMIN ONLY) -->
+  <div class="modal-overlay" id="adminDashboardModal" onclick="closeModalOnOverlay(event, 'adminDashboardModal')">
+    <div class="modal-box large" onclick="event.stopPropagation()" style="max-width: 1100px; width: 96vw;">
+      <div class="modal-header-custom d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+
+          <div>
+            <h4 class="m-0 fw-bold text-dark">Admin Control Center</h4>
+            <small class="text-muted">Live Database Records • Registered Users & Booked Tickets</small>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-outline-primary fw-bold d-inline-flex align-items-center gap-1 shadow-sm"
+            id="adminRefreshBtn" onclick="refreshAdminDashboardData(this)">
+            <span id="adminRefreshSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+            <span id="adminRefreshBtnText">Refresh Data</span>
+          </button>
+          <button class="modal-close" onclick="closeModal('adminDashboardModal')" title="Close">✕</button>
+        </div>
+      </div>
+
+      <div class="modal-body-custom pt-3">
+        <!-- 4 METRICS CARDS -->
+        <div class="row g-2 mb-3">
+          <div class="col-6 col-md-3">
+            <div class="p-2 border rounded text-center bg-light shadow-sm">
+              <small class="text-muted d-block" style="font-size:11px;">Registered Users</small>
+              <strong class="fs-5 text-dark" id="adminTotalUsers">0</strong>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-2 border rounded text-center bg-light shadow-sm">
+              <small class="text-muted d-block" style="font-size:11px;">Tickets Booked</small>
+              <strong class="fs-5 text-primary" id="adminTotalBookings">0</strong>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-2 border rounded text-center bg-light shadow-sm">
+              <small class="text-muted d-block" style="font-size:11px;">Total Revenue</small>
+              <strong class="fs-5 text-success" id="adminTotalRevenue">₹0</strong>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-2 border rounded text-center bg-light shadow-sm">
+              <small class="text-muted d-block" style="font-size:11px;">MySQL Database</small>
+              <strong class="fs-6 text-success" id="adminDbStatusText">Live (Port 3307)</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABS: Bookings vs Users vs Reviews -->
+        <ul class="nav nav-pills mb-3 gap-2" id="adminTabs">
+          <li class="nav-item flex-fill">
+            <button class="nav-link active w-100 fw-bold text-center py-2" id="adminTabBookingsBtn"
+              onclick="switchAdminTab('bookings')">
+              Booked Tickets (<span id="adminTabBookingsCount">0</span>)
+            </button>
+          </li>
+          <li class="nav-item flex-fill">
+            <button class="nav-link w-100 fw-bold text-center py-2" id="adminTabUsersBtn"
+              onclick="switchAdminTab('users')">
+              Members / Logins (<span id="adminTabUsersCount">0</span>)
+            </button>
+          </li>
+          <li class="nav-item flex-fill">
+            <button class="nav-link w-100 fw-bold text-center py-2" id="adminTabReviewsBtn"
+              onclick="switchAdminTab('reviews')">
+              Reviews & Ratings (<span id="adminTabReviewsCount">0</span>)
+            </button>
+          </li>
+        </ul>
+
+        <!-- SEARCH INPUT FOR LIVE FILTERING -->
+        <div class="mb-3">
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-white border-end-0 small fw-bold text-muted">Search:</span>
+            <input type="text" class="form-control border-start-0 border-end-0 py-2" id="adminSearchInput"
+              placeholder="Search records by name, Gmail, phone, PNR, route, operator..."
+              oninput="filterAdminCurrentTab()" onkeypress="if(event.key==='Enter') filterAdminCurrentTab(true)" />
+            <button class="btn btn-outline-secondary border-start-0" type="button" onclick="clearAdminSearch()"
+              title="Clear Search">✕</button>
+            <button class="btn btn-primary px-3 fw-bold" type="button"
+              onclick="filterAdminCurrentTab(true)">Search</button>
+          </div>
+          <div id="adminSearchSummary" class="form-text mt-1 text-muted small d-none"></div>
+        </div>
+
+        <!-- CONTENT: BOOKINGS TAB -->
+        <div id="adminTabBookingsContent">
+          <div class="table-responsive border rounded" style="max-height: 48vh; overflow-y: auto;">
+            <table class="table table-hover table-striped align-middle small mb-0">
+              <thead class="table-dark sticky-top">
+                <tr>
+                  <th>PNR</th>
+                  <th>Passenger Details</th>
+                  <th>Bus Operator & Route</th>
+                  <th>Travel Date</th>
+                  <th>Seats</th>
+                  <th>Fare</th>
+                  <th>Status</th>
+                  <th>Booked At</th>
+                </tr>
+              </thead>
+              <tbody id="adminBookingsTableBody">
+                <tr>
+                  <td colspan="8" class="text-center py-4 text-muted">Loading bookings...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CONTENT: USERS TAB -->
+        <div id="adminTabUsersContent" class="d-none">
+          <div class="table-responsive border rounded" style="max-height: 48vh; overflow-y: auto;">
+            <table class="table table-hover table-striped align-middle small mb-0">
+              <thead class="table-dark sticky-top">
+                <tr>
+                  <th>ID</th>
+                  <th>User Name</th>
+                  <th>Gmail Address</th>
+                  <th>Mobile Number</th>
+                  <th>Role</th>
+                  <th>Registered At</th>
+                  <th>Bookings Count</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersTableBody">
+                <tr>
+                  <td colspan="7" class="text-center py-4 text-muted">Loading users...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CONTENT: REVIEWS TAB -->
+        <div id="adminTabReviewsContent" class="d-none">
+          <div class="table-responsive border rounded" style="max-height: 48vh; overflow-y: auto;">
+            <table class="table table-hover table-striped align-middle small mb-0">
+              <thead class="table-dark sticky-top">
+                <tr>
+                  <th>PNR</th>
+                  <th>Passenger</th>
+                  <th>Trip Rating</th>
+                  <th>Driver Rating (Captain Kirtan)</th>
+                  <th>Feedback / Comments</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="adminReviewsTableBody">
+                <tr>
+                  <td colspan="6" class="text-center py-4 text-muted">No reviews submitted yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <button class="btn btn-outline-secondary w-100" onclick="closeModal('adminDashboardModal')">✕ Close Admin
+            Portal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="js/three.min.js"></script>
+  <script>
+    if (typeof THREE === 'undefined') {
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+      document.head.appendChild(s);
+    }
+  </script>
+  <script src="js/seat-lock.js"></script>
+  <script src="app.js"></script>
+  <script src="js/ai-copilot.js"></script>
+</body>
+
+</html>

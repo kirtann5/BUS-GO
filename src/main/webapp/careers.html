@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="theme-color" content="#ffffff" id="metaThemeColor"/>
+  <title>Careers at BusGo — Join Our Engineering &amp; Operations Team</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    /* Clean, Lightweight redBus Style Careers Layout */
+    body {
+      background-color: #fafafa;
+      color: #374151;
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .careers-nav {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+
+    .careers-main-wrapper {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 36px 20px 60px;
+      flex-grow: 1;
+      width: 100%;
+    }
+
+    .careers-hero-badge {
+      display: inline-block;
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+      padding: 4px 12px;
+      border-radius: 50rem;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .careers-heading {
+      font-family: var(--font-head);
+      color: #111827;
+      font-size: 2.1rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .careers-sub {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #4b5563;
+      margin-bottom: 28px;
+    }
+
+    /* Benefits Grid (Compact) */
+    .perks-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .perk-card {
+      background: #ffffff;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 16px 18px;
+      transition: all 0.2s ease;
+    }
+
+    .perk-card:hover {
+      border-color: #d84e55;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .perk-title {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 14.5px;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .perk-desc {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 12px;
+    }
+
+    .tab-pill {
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      color: #4b5563;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-pill:hover,
+    .tab-pill.active {
+      background: #d84e55;
+      color: #ffffff;
+      border-color: #d84e55;
+    }
+
+    /* Job Openings List */
+    .section-title-red {
+      font-family: var(--font-head);
+      color: #d84e55;
+      font-size: 1.45rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+
+    .job-card {
+      background: #ffffff;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .job-card:hover {
+      border-color: #d84e55;
+      box-shadow: 0 6px 18px rgba(216, 78, 85, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .job-role-title {
+      font-family: var(--font-head);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #111827;
+      margin: 0;
+    }
+
+    .job-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .badge-dept {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .badge-loc {
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .badge-type {
+      background: #fdf2f8;
+      color: #be185d;
+      border: 1px solid #fbcfe8;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .job-summary {
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .btn-apply {
+      background: #d84e55;
+      color: #ffffff;
+      border: none;
+      font-weight: 700;
+      font-size: 13.5px;
+      padding: 6px 18px;
+      border-radius: 8px;
+      transition: background 0.2s ease;
+    }
+
+    .btn-apply:hover {
+      background: #b91c1c;
+      color: #ffffff;
+    }
+
+    /* Application Modal Custom Styling */
+    .modal-backdrop-custom {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1050;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop-custom.show {
+      display: flex;
+    }
+
+    .modal-box-careers {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      animation: modalFadeIn 0.25s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header-careers {
+      padding: 18px 22px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title-careers {
+      font-family: var(--font-head);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #111827;
+      margin: 0;
+    }
+
+    .modal-body-careers {
+      padding: 22px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    /* Mobile Responsiveness (< 768px) */
+    @media (max-width: 767px) {
+      .careers-main-wrapper {
+        padding: 24px 16px 40px;
+      }
+      .careers-heading {
+        font-size: 1.65rem;
+      }
+      .perks-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .job-card {
+        padding: 16px;
+      }
+      .job-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .btn-apply {
+        width: 100%;
+        text-align: center;
+        padding: 8px 16px;
+      }
+    }
+
+    /* Dark Mode Overrides */
+    [data-theme="dark"] body {
+      background-color: #0b1120;
+      color: #cbd5e1;
+    }
+
+    [data-theme="dark"] .careers-nav {
+      background: #0f172a;
+      border-bottom-color: #1e293b;
+    }
+
+    [data-theme="dark"] .careers-heading {
+      color: #f1f5f9;
+    }
+
+    [data-theme="dark"] .careers-sub {
+      color: #94a3b8;
+    }
+
+    [data-theme="dark"] .perk-card,
+    [data-theme="dark"] .job-card {
+      background: #1e293b;
+      border-color: #334155;
+    }
+
+    [data-theme="dark"] .perk-card:hover,
+    [data-theme="dark"] .job-card:hover {
+      border-color: #ff6b35;
+    }
+
+    [data-theme="dark"] .perk-title,
+    [data-theme="dark"] .job-role-title {
+      color: #f1f5f9;
+    }
+
+    [data-theme="dark"] .perk-desc,
+    [data-theme="dark"] .job-summary {
+      color: #94a3b8;
+    }
+
+    [data-theme="dark"] .tab-pill {
+      background: #1e293b;
+      border-color: #334155;
+      color: #cbd5e1;
+    }
+
+    [data-theme="dark"] .filter-tabs {
+      border-bottom-color: #334155;
+    }
+
+    [data-theme="dark"] .badge-dept {
+      background: rgba(37, 99, 235, 0.15);
+      color: #93c5fd;
+      border-color: rgba(37, 99, 235, 0.3);
+    }
+
+    [data-theme="dark"] .badge-loc {
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    [data-theme="dark"] .badge-type {
+      background: rgba(236, 72, 153, 0.15);
+      color: #f472b6;
+      border-color: rgba(236, 72, 153, 0.3);
+    }
+
+    [data-theme="dark"] .modal-box-careers {
+      background: #1e293b;
+      border: 1px solid #334155;
+    }
+
+    [data-theme="dark"] .modal-header-careers {
+      border-bottom-color: #334155;
+    }
+
+    [data-theme="dark"] .modal-title-careers {
+      color: #f1f5f9;
+    }
+
+    [data-theme="dark"] .form-control {
+      background-color: #0f172a;
+      border-color: #334155;
+      color: #f1f5f9;
+    }
+
+    [data-theme="dark"] .form-control:focus {
+      background-color: #162032;
+      border-color: #ff6b35;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP COMPACT NAVIGATION BAR -->
+<nav class="careers-nav">
+  <div class="container d-flex justify-content-between align-items-center" style="max-width: 920px;">
+    <a class="navbar-brand d-flex align-items-center gap-1 text-decoration-none" href="index.html">
+      <span class="brand-icon"></span>
+      <span class="fw-bold fs-4" style="color: var(--primary); font-family: var(--font-head); letter-spacing: -0.5px;">BusGo</span>
+    </a>
+    
+    <div class="d-flex align-items-center gap-2">
+      <a href="about.html" class="btn btn-outline-secondary btn-sm px-3 fw-bold" style="border-radius: 8px;">
+        About Founders
+      </a>
+      <a href="index.html" class="btn btn-outline-secondary btn-sm px-3 fw-bold" style="border-radius: 8px;">
+        &larr; Back to Booking
+      </a>
+      <button class="btn btn-outline-secondary btn-sm shadow-sm" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark / Light Mode" style="border-radius: 8px;">
+        <span id="themeToggleLabel" class="badge bg-secondary-subtle text-secondary border px-2 py-1 fw-bold">Dark Mode</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT CONTAINER -->
+<main class="careers-main-wrapper">
+  
+  <div class="careers-hero-badge">Careers at BusGo</div>
+  <h1 class="careers-heading">Build the Future of Intercity Bus Mobility</h1>
+  <p class="careers-sub">
+    We are a tight-knit team of engineers, designers, and operators solving real transit challenges for millions of commuters across India. Founded in 2026 by Kirtan Bhawsar &amp; Bhavesh Savner, we value ownership, clean architecture, and passenger empathy.
+  </p>
+
+  <!-- WHY WORK WITH US (4 COMPACT PILLARS) -->
+  <div class="perks-row">
+    <div class="perk-card">
+      <div class="perk-title">Real Passenger Impact</div>
+      <p class="perk-desc">Your code powers daily journeys, ladies seat safety, and instant ticket confirmations for real travelers.</p>
+    </div>
+    <div class="perk-card">
+      <div class="perk-title">Modern Tech Stack</div>
+      <p class="perk-desc">Work with Java enterprise backends, Leaflet GPS engines, AI copilot NLP, and high-performance frontend systems.</p>
+    </div>
+    <div class="perk-card">
+      <div class="perk-title">Flexible Work Models</div>
+      <p class="perk-desc">Hybrid &amp; remote options across Indore, Dharampuri, Khargone, and pan-India locations.</p>
+    </div>
+    <div class="perk-card">
+      <div class="perk-title">Merit-Driven Growth</div>
+      <p class="perk-desc">Direct collaboration with founders, rapid promotion cycles, and equity opportunities as we scale.</p>
+    </div>
+  </div>
+
+  <!-- CURRENT JOB OPENINGS SECTION -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="section-title-red m-0">Open Positions</h2>
+    <span class="small text-secondary fw-semibold" id="jobCountText">7 Open Roles</span>
+  </div>
+
+  <!-- DEPARTMENT FILTER TABS -->
+  <div class="filter-tabs">
+    <button class="tab-pill active" onclick="filterJobs('all')">All Roles</button>
+    <button class="tab-pill" onclick="filterJobs('engineering')">Engineering &amp; Tech</button>
+    <button class="tab-pill" onclick="filterJobs('product')">Product &amp; UI/UX</button>
+    <button class="tab-pill" onclick="filterJobs('operations')">Operations &amp; Fleet</button>
+  </div>
+
+  <!-- JOB LISTINGS -->
+  <div id="jobListingsContainer">
+
+    <!-- JOB 1: Java Full Stack Engineer -->
+    <div class="job-card" data-dept="engineering">
+      <div class="job-header">
+        <h3 class="job-role-title">Senior Full Stack Java Engineer</h3>
+        <button class="btn-apply" onclick="openApplyModal('Senior Full Stack Java Engineer', 'Engineering')">Apply Now</button>
+      </div>
+      <div class="job-badges">
+        <span class="badge-dept">Engineering</span>
+        <span class="badge-loc">Indore / Dharampuri (Hybrid/Remote)</span>
+        <span class="badge-type">Full-time</span>
+      </div>
+      <p class="job-summary">
+        Design and scale our high-throughput Java ticket inventory engine, MySQL transactional database schemas, and real-time REST microservices handling thousands of simultaneous seat locks and PhonePe UPI webhook verifications.
+      </p>
+    </div>
+
+    <!-- JOB 2: Frontend Engineer -->
+    <div class="job-card" data-dept="engineering">
+      <div class="job-header">
+        <h3 class="job-role-title">Frontend Engineer (Interactive UI &amp; GPS)</h3>
+        <button class="btn-apply" onclick="openApplyModal('Frontend Engineer (Interactive UI & GPS)', 'Engineering')">Apply Now</button>
+      </div>
+      <div class="job-badges">
+        <span class="badge-dept">Engineering</span>
+        <span class="badge-loc">Khargone / Indore / Remote</span>
+        <span class="badge-type">Full-time</span>
+      </div>
+      <p class="job-summary">
+        Craft ultra-responsive 2+2 and sleeper seat layouts, real-time Leaflet highway bus telemetry animations, mobile browser touch optimizations, and smooth theme toggle transitions with sub-second rendering speeds.
+      </p>
+    </div>
+
+    <!-- JOB 3: AI & NLP Engineer -->
+    <div class="job-card" data-dept="engineering">
+      <div class="job-header">
+        <h3 class="job-role-title">AI Copilot &amp; Conversational NLP Engineer</h3>
+        <button class="btn-apply" onclick="openApplyModal('AI Copilot & Conversational NLP Engineer', 'Engineering')">Apply Now</button>
+      </div>
+      <div class="job-badges">
+        <span class="badge-dept">Engineering</span>
+        <span class="badge-loc">Remote (India)</span>
+        <span class="badge-type">Full-time</span>
+      </div>
+      <p class="job-summary">
+        Enhance BusGo GPT's multi-turn conversational intelligence across 12+ Indian regional languages (Tamil, Telugu, Marathi, Hindi, etc.) for contextual booking recommendations, highway weather forecasting, and PNR resolution.
+      </p>
+    </div>
+
+    <!-- JOB 4: UI/UX Product Designer -->
+    <div class="job-card" data-dept="product">
+      <div class="job-header">
+        <h3 class="job-role-title">Lead UI/UX Product Designer</h3>
+        <button class="btn-apply" onclick="openApplyModal('Lead UI/UX Product Designer', 'Product')">Apply Now</button>
+      </div>
+      <div class="job-badges">
+        <span class="badge-dept">Product</span>
+        <span class="badge-loc">Indore / Remote</span>
+        <span class="badge-type">Full-time</span>
+      </div>
+      <p class="job-summary">
+        Define user journeys for first-time bus travelers, solo female safety indicators, driver communication panels, and print-ready PDF ticket layouts with clean typography and high-accessibility design standards.
+      </p>
+    </div>
+
+    <!-- JOB 5: Associate Product Manager -->
+    <div class="job-card" data-dept="product">
+      <div class="job-header">
+        <h3 class="job-role-title">Associate Product Manager (Growth &amp; Corridor Expansion)</h3>
+        <button class="btn-apply" onclick="openApplyModal('Associate Product Manager (Growth)', 'Product')">Apply Now</button>
+      </div>
+      <div class="job-badges">
+        <span class="badge-dept">Product</span>
+        <span class="badge-loc">Indore (On-site / Hybrid)</span>
+        <span class="badge-type">Full-time</span>
+      </div>
+      <p class="job-summary">
+        Analyze corridor route metrics (Dharampuri–Indore, Indore–Bhopal, Pune–Mumbai), optimize conversion funnels, partner with private bus operators, and translate commuter feedback into technical feature roadmaps.
+      </p>
+    </div>
+
+    <!-- JOB 6: Fleet Operations Manager -->
+    <div class="job-card" data-dept="operations">
+      <div class="job-header">
+        <h3 class="job-role-title">Fleet Operations Specialist &amp; Driver Liaison</h3>
+        <button class="btn-apply" onclick="openApplyModal('Fleet Operations Specialist', 'Operations')">Apply Now</button>
+      </div>
+      <div class="job-badges">
+        <span class="badge-dept">Operations</span>
+        <span class="badge-loc">Dharampuri / Indore</span>
+        <span class="badge-type">Full-time</span>
+      </div>
+      <p class="job-summary">
+        Partner directly with bus fleet drivers including Captain Kirtan (+91 6264213958) and regional operators to ensure GPS hardware uptime, punctuality tracking, verified boarding points, and women-safe passenger onboarding.
+      </p>
+    </div>
+
+    <!-- JOB 7: 24x7 Customer Support Specialist -->
+    <div class="job-card" data-dept="operations">
+      <div class="job-header">
+        <h3 class="job-role-title">Customer Experience &amp; Ticket Support Executive</h3>
+        <button class="btn-apply" onclick="openApplyModal('Customer Experience Executive', 'Operations')">Apply Now</button>
+      </div>
+      <div class="job-badges">
+        <span class="badge-dept">Operations</span>
+        <span class="badge-loc">Remote (Work from Home)</span>
+        <span class="badge-type">Full-time / Rotational</span>
+      </div>
+      <p class="job-summary">
+        Assist passengers with live booking modifications, instant refund coordination, stoppage clarification, and WhatsApp / hotline customer inquiries with warmth, empathy, and speed.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- APPLICATION SUCCESS NOTICE (Hidden by default) -->
+  <div id="applicationToast" class="alert alert-success mt-4 d-none shadow-sm border-0" role="alert">
+    <strong>Application Submitted Successfully!</strong> Thank you for your interest in joining BusGo. Our talent acquisition team will review your application and respond within 48 hours.
+  </div>
+
+</main>
+
+<!-- APPLICATION MODAL POPUP -->
+<div class="modal-backdrop-custom" id="applyModal" onclick="closeApplyModalOnBackdrop(event)">
+  <div class="modal-box-careers">
+    <div class="modal-header-careers">
+      <div>
+        <h4 class="modal-title-careers" id="modalJobTitle">Apply for Role</h4>
+        <small class="text-secondary" id="modalJobDept">Department: Engineering</small>
+      </div>
+      <button type="button" class="btn-close" onclick="closeApplyModal()"></button>
+    </div>
+    <div class="modal-body-careers">
+      <form id="jobApplicationForm" onsubmit="submitJobApplication(event)">
+        <input type="hidden" id="appRoleField" name="role" value=""/>
+        
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Full Name *</label>
+          <input type="text" class="form-control" id="appFullName" placeholder="e.g. Rahul Sharma" required/>
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-sm-6">
+            <label class="form-label small fw-bold">Email Address *</label>
+            <input type="email" class="form-control" id="appEmail" placeholder="your@email.com" required/>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label small fw-bold">Mobile Number *</label>
+            <input type="tel" class="form-control" id="appPhone" placeholder="e.g. 9876543210" maxlength="10" required/>
+          </div>
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-sm-6">
+            <label class="form-label small fw-bold">Years of Experience</label>
+            <select class="form-select form-control" id="appExperience">
+              <option value="Fresher / 0-1 yr">Fresher / 0-1 Year</option>
+              <option value="1-3 yrs" selected>1 - 3 Years</option>
+              <option value="3-5 yrs">3 - 5 Years</option>
+              <option value="5+ yrs">5+ Years</option>
+            </select>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label small fw-bold">Current City</label>
+            <input type="text" class="form-control" id="appCity" placeholder="e.g. Indore, Bhopal, Dhar"/>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Portfolio / LinkedIn / GitHub URL</label>
+          <input type="url" class="form-control" id="appPortfolio" placeholder="https://linkedin.com/in/... or github.com/..."/>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label small fw-bold">Brief Note / Why do you want to join BusGo?</label>
+          <textarea class="form-control" id="appNote" rows="3" placeholder="Tell us about yourself, your projects, and why you are excited about smart bus mobility..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" style="background:#d84e55; border:none; border-radius:8px;">
+          Submit Application
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- SIMPLE, CLEAN FOOTER -->
+<footer class="footer mt-auto">
+  <div class="container" style="max-width: 920px;">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="footer-brand">BusGo</div>
+        <p class="footer-desc mb-2">India's most trusted online bus booking platform. Safe, affordable, and always on time.</p>
+        <div class="small text-secondary">
+          Moti Nagar Colony, Dharampuri (M.P.) &bull; Maha Laxmi Nagar, Motipura Main Road, Khargone (M.P.)
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <h6>Company</h6>
+        <ul class="footer-links">
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="careers.html">Careers</a></li>
+          <li><a href="index.html#routes-section">Popular Routes</a></li>
+          <li><a href="index.html#how-section">How It Works</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 col-6">
+        <h6>Support</h6>
+        <ul class="footer-links">
+          <li><a href="index.html">Help Center</a></li>
+          <li><a href="index.html">Cancellation</a></li>
+          <li><a href="https://wa.me/916264213958" target="_blank">Contact Captain Kirtan</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 BusGo Technologies. Founded by Kirtan Bhawsar &amp; Bhavesh Savner.</span>
+      <span>Privacy Policy &bull; Terms of Service</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Filter Openings by Department
+  function filterJobs(dept) {
+    const tabs = document.querySelectorAll('.tab-pill');
+    tabs.forEach(t => t.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    const cards = document.querySelectorAll('.job-card');
+    let visibleCount = 0;
+    cards.forEach(card => {
+      if (dept === 'all' || card.getAttribute('data-dept') === dept) {
+        card.style.display = 'block';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+    const countText = document.getElementById('jobCountText');
+    if (countText) {
+      countText.textContent = `${visibleCount} Open Role${visibleCount === 1 ? '' : 's'}`;
+    }
+  }
+
+  // Application Modal Controls
+  function openApplyModal(role, dept) {
+    document.getElementById('modalJobTitle').textContent = `Apply: ${role}`;
+    document.getElementById('modalJobDept').textContent = `Department: ${dept}`;
+    document.getElementById('appRoleField').value = role;
+    document.getElementById('applyModal').classList.add('show');
+  }
+
+  function closeApplyModal() {
+    document.getElementById('applyModal').classList.remove('show');
+  }
+
+  function closeApplyModalOnBackdrop(e) {
+    if (e.target.id === 'applyModal') {
+      closeApplyModal();
+    }
+  }
+
+  function submitJobApplication(e) {
+    e.preventDefault();
+    const role = document.getElementById('appRoleField').value;
+    const name = document.getElementById('appFullName').value;
+    const email = document.getElementById('appEmail').value;
+    const phone = document.getElementById('appPhone').value;
+
+    closeApplyModal();
+
+    // Show toast confirmation
+    const toast = document.getElementById('applicationToast');
+    if (toast) {
+      toast.innerHTML = `<strong>Application Received for ${role}!</strong> Thank you ${name}. We have sent a confirmation email to <u>${email}</u>. Our team will contact you at ${phone} soon!`;
+      toast.classList.remove('d-none');
+      toast.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Reset form
+    document.getElementById('jobApplicationForm').reset();
+  }
+
+  // Theme Engine for Careers Page
+  function initTheme() {
+    const saved = localStorage.getItem('busgo_theme') || 'light';
+    applyTheme(saved);
+  }
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-bs-theme', theme);
+    localStorage.setItem('busgo_theme', theme);
+    const isDark = theme === 'dark';
+    const label = document.getElementById('themeToggleLabel');
+    if (label) {
+      label.textContent = isDark ? 'Dark Mode' : 'Light Mode';
+      label.className = isDark ? 'badge bg-warning text-dark px-2 py-1 fw-bold' : 'badge bg-secondary text-white px-2 py-1 fw-bold';
+    }
+    const metaTheme = document.getElementById('metaThemeColor');
+    if (metaTheme) {
+      metaTheme.setAttribute('content', isDark ? '#0b1120' : '#ffffff');
+    }
+  }
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+  }
+  document.addEventListener('DOMContentLoaded', initTheme);
+</script>
+
+</body>
+</html>

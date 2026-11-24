@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#ffffff" id="metaThemeColor" />
+  <title>My Bookings &amp; e-Tickets &mdash; BusGo Smart Travel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #334155;
+      font-family: var(--font-body, 'DM Sans', sans-serif);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bookings-nav {
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+
+    .bookings-main-wrapper {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 32px 18px 60px;
+      flex-grow: 1;
+      width: 100%;
+    }
+
+    .portal-badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      padding: 4px 12px;
+      border-radius: 50rem;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .portal-heading {
+      font-family: var(--font-head, 'Syne', sans-serif);
+      color: #0f172a;
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .portal-sub {
+      font-size: 14.5px;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+
+    .ticket-card-item {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+      transition: all 0.2s ease;
+    }
+
+    .ticket-card-item:hover {
+      border-color: #0284c7;
+      box-shadow: 0 6px 18px rgba(2, 132, 199, 0.08);
+    }
+
+    .ticket-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 13.5px;
+    }
+
+    .ticket-label {
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .ticket-val {
+      color: #0f172a;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .filter-pill-btn {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-pill-btn:hover,
+    .filter-pill-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+    }
+
+    /* Dark Mode Theme Overrides */
+    [data-theme="dark"] body {
+      background-color: #090d16;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .bookings-nav {
+      background: #0f172a;
+      border-color: #1e293b;
+    }
+
+    [data-theme="dark"] .portal-heading {
+      color: #f8fafc;
+    }
+
+    [data-theme="dark"] .portal-sub {
+      color: #94a3b8;
+    }
+
+    [data-theme="dark"] .ticket-card-item {
+      background: #0f172a;
+      border-color: #1e293b;
+    }
+
+    [data-theme="dark"] .ticket-val {
+      color: #f1f5f9;
+    }
+
+    [data-theme="dark"] .filter-pill-btn {
+      background: #1e293b;
+      border-color: #334155;
+      color: #cbd5e1;
+    }
+
+    [data-theme="dark"] .filter-pill-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP STICKY NAVIGATION -->
+  <nav class="bookings-nav">
+    <div class="container d-flex justify-content-between align-items-center" style="max-width: 920px;">
+      <a href="index.html" class="navbar-brand d-flex align-items-center gap-2 text-decoration-none">
+        <span class="brand-icon"></span>
+        <span class="fw-extrabold fs-4 tracking-tight"
+          style="color: var(--primary); font-family: var(--font-head);">BusGo</span>
+      </a>
+
+      <div class="d-flex align-items-center gap-2">
+        <a href="index.html" class="btn btn-outline-primary btn-sm px-3 fw-bold" style="border-radius: 8px;">
+          &larr; Book Another Bus
+        </a>
+        <a href="careers.html" target="_blank"
+          class="btn btn-outline-secondary btn-sm px-3 fw-bold d-none d-sm-inline-block" style="border-radius: 8px;">
+          Careers
+        </a>
+        <button class="btn btn-outline-secondary btn-sm shadow-sm" id="themeToggleBtn" onclick="toggleTheme()"
+          title="Toggle Dark / Light Mode" style="border-radius: 8px;">
+          <span id="themeToggleLabel" class="badge bg-secondary text-white px-2 py-1 fw-bold">Light Mode</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTAINER -->
+  <main class="bookings-main-wrapper">
+    <div class="text-center text-sm-start mb-4">
+      <div class="portal-badge">Passenger Self-Service Portal</div>
+      <h1 class="portal-heading">My Bookings &amp; e-Tickets</h1>
+      <p class="portal-sub">Review your confirmed travel reservations, download official PDF boarding passes, and
+        inspect live transit status.</p>
+    </div>
+
+    <!-- SEARCH & FILTER TOOLBAR -->
+    <div class="card p-3 mb-4 border shadow-sm" style="background:#ffffff; border-radius: 12px;" id="toolbarCard">
+      <div class="row g-2 align-items-center">
+        <div class="col-md-7 col-12">
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0 text-muted small fw-bold">Search</span>
+            <input type="text" class="form-control border-start-0" id="bookingSearchInput"
+              placeholder="Search by PNR, mobile, name, route or date..." oninput="handleSearch(this.value)" />
+            <button class="btn btn-outline-secondary border-start-0" type="button" onclick="clearSearch()"
+              title="Clear">&times;</button>
+          </div>
+        </div>
+        <div class="col-md-5 col-12 d-flex justify-content-md-end gap-1.5 flex-wrap">
+          <button type="button" class="filter-pill-btn active" id="tabAll" onclick="setFilter('all', this)">All (<span
+              id="countAll">0</span>)</button>
+          <button type="button" class="filter-pill-btn" id="tabConfirmed"
+            onclick="setFilter('confirmed', this)">Confirmed (<span id="countConfirmed">0</span>)</button>
+          <button type="button" class="filter-pill-btn" id="tabCancelled"
+            onclick="setFilter('cancelled', this)">Cancelled (<span id="countCancelled">0</span>)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOKINGS LIST CONTAINER -->
+    <div id="bookingsListContainer"></div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer mt-auto py-4 border-top" style="background: #ffffff;">
+    <div class="container" style="max-width: 920px;">
+      <div class="row g-4">
+        <div class="col-md-6 col-12">
+          <div class="footer-brand fs-5 fw-bold" style="color: var(--primary);">BusGo</div>
+          <p class="small text-muted mb-1">India's smart bus transit platform connecting Indore, Dharampuri, Khargone,
+            Bhopal, and Mumbai.</p>
+          <div class="small text-secondary">
+            Moti Nagar Colony, Dharampuri (M.P.) &bull; Maha Laxmi Nagar, Khargone (M.P.)
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <h6 class="small fw-bold text-uppercase text-secondary">Company</h6>
+          <ul class="list-unstyled small mb-0">
+            <li class="mb-1"><a href="about.html" target="_blank" class="text-decoration-none text-secondary">About
+                Us</a></li>
+            <li class="mb-1"><a href="careers.html" target="_blank"
+                class="text-decoration-none text-secondary">Careers</a></li>
+            <li><a href="index.html#routes-section" class="text-decoration-none text-secondary">Popular Routes</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 col-6">
+          <h6 class="small fw-bold text-uppercase text-secondary">Support</h6>
+          <ul class="list-unstyled small mb-0">
+            <li class="mb-1"><a href="index.html" class="text-decoration-none text-secondary">Help Center</a></li>
+            <li class="mb-1"><a href="https://wa.me/916264213958" target="_blank"
+                class="text-decoration-none text-secondary">Captain Kirtan Helpline</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-top pt-3 mt-3 d-flex justify-content-between align-items-center flex-wrap small text-muted">
+        <span>&copy; 2026 BusGo Technologies. Founded by Kirtan Bhawsar &amp; Bhavesh Savner.</span>
+        <span>Safe Travel Partner &bull; Women-Safe Verified</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer" style="z-index: 1100;"></div>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <script>
+    // Theme Engine
+    function initTheme() {
+      const saved = localStorage.getItem('busgo_theme') || 'light';
+      applyTheme(saved);
+    }
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      localStorage.setItem('busgo_theme', theme);
+      const isDark = theme === 'dark';
+      const label = document.getElementById('themeToggleLabel');
+      if (label) {
+        label.textContent = isDark ? 'Dark Mode' : 'Light Mode';
+        label.className = isDark ? 'badge bg-warning text-dark px-2 py-1 fw-bold' : 'badge bg-secondary text-white px-2 py-1 fw-bold';
+      }
+      const metaTheme = document.getElementById('metaThemeColor');
+      if (metaTheme) metaTheme.setAttribute('content', isDark ? '#090d16' : '#ffffff');
+    }
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    // Toast System
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = `toast align-items-center text-bg-${type === 'error' ? 'danger' : (type === 'success' ? 'success' : 'primary')} border-0 show mb-2 shadow`;
+      toast.setAttribute('role', 'alert');
+      toast.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body fw-semibold">${msg}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.parentElement.parentElement.remove()"></button>
+      </div>`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    // Bookings Engine
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    function getStoredBookings() {
+      try {
+        const d1 = localStorage.getItem('busgo_booked_tickets_v1');
+        const d2 = localStorage.getItem('busgo_bookings');
+        const l1 = d1 ? JSON.parse(d1) : [];
+        const l2 = d2 ? JSON.parse(d2) : [];
+        const map = new Map();
+        if (Array.isArray(l1)) l1.forEach(b => { if (b && b.pnr) map.set(String(b.pnr).toUpperCase().trim(), b); });
+        if (Array.isArray(l2)) l2.forEach(b => { if (b && b.pnr && !map.has(String(b.pnr).toUpperCase().trim())) map.set(String(b.pnr).toUpperCase().trim(), b); });
+        return Array.from(map.values());
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveStoredBookings(list) {
+      try {
+        const str = JSON.stringify(list);
+        localStorage.setItem('busgo_booked_tickets_v1', str);
+        localStorage.setItem('busgo_bookings', str);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // Asynchronous backend synchronization if running on a live server
+    async function syncBackendBookings() {
+      try {
+        const res = await fetch('/api/bookings', { signal: AbortSignal.timeout(2500) });
+        if (res.ok) {
+          const serverBookings = await res.json();
+          const list = Array.isArray(serverBookings) ? serverBookings : (serverBookings.data || []);
+          if (Array.isArray(list) && list.length > 0) {
+            const local = getStoredBookings();
+            const map = new Map();
+            local.forEach(b => { if (b && b.pnr) map.set(String(b.pnr).toUpperCase().trim(), b); });
+            list.forEach(b => {
+              if (b && b.pnr && !map.has(String(b.pnr).toUpperCase().trim())) {
+                map.set(String(b.pnr).toUpperCase().trim(), b);
+              }
+            });
+            saveStoredBookings(Array.from(map.values()));
+            renderBookings();
+          }
+        }
+      } catch (e) {
+        // Local mode fallback
+      }
+    }
+
+    function createSampleBooking() {
+      const sample = {
+        id: Date.now(),
+        pnr: 'BG' + Date.now().toString().slice(-6),
+        passengerName: 'Kirtan Bhawsar',
+        gender: 'Male',
+        phone: '+91 6264213958',
+        email: 'kirtan.bhawsar@busgo.com',
+        operator: 'IntrCity SmartBus (Captain Kirtan)',
+        fromCity: 'Dharampuri (Dhar, MP)',
+        toCity: 'Indore (Indore, MP)',
+        departure: '06:00 PM',
+        travelDate: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString().split('T')[0],
+        pickupPoint: 'Dharampuri Main Bus Stand',
+        dropPoint: 'Navlakha Bus Station, Indore',
+        seats: [12],
+        seatsBooked: '12',
+        totalAmount: 240,
+        fare: 240,
+        status: 'CONFIRMED',
+        paymentMethod: 'PhonePe UPI',
+        txnId: 'TXN_' + Math.floor(100000 + Math.random() * 900000),
+        createdAt: new Date().toISOString()
+      };
+      const list = getStoredBookings();
+      list.unshift(sample);
+      saveStoredBookings(list);
+      renderBookings();
+      showToast('Sample verified ticket added to My Bookings!', 'success');
+    }
+
+    function renderBookings() {
+      const all = getStoredBookings();
+      const confirmedCount = all.filter(b => String(b.status || 'CONFIRMED').toUpperCase() === 'CONFIRMED').length;
+      const cancelledCount = all.filter(b => String(b.status || '').toUpperCase() === 'CANCELLED').length;
+
+      const countAllEl = document.getElementById('countAll');
+      const countConfEl = document.getElementById('countConfirmed');
+      const countCancEl = document.getElementById('countCancelled');
+      if (countAllEl) countAllEl.textContent = all.length;
+      if (countConfEl) countConfEl.textContent = confirmedCount;
+      if (countCancEl) countCancEl.textContent = cancelledCount;
+
+      let filtered = all;
+      if (currentFilter === 'confirmed') {
+        filtered = filtered.filter(b => String(b.status || 'CONFIRMED').toUpperCase() === 'CONFIRMED');
+      } else if (currentFilter === 'cancelled') {
+        filtered = filtered.filter(b => String(b.status || '').toUpperCase() === 'CANCELLED');
+      }
+
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(b => {
+          return (b.pnr || '').toLowerCase().includes(q) ||
+            (b.passengerName || '').toLowerCase().includes(q) ||
+            (b.phone || b.passengerPhone || '').toLowerCase().includes(q) ||
+            (b.fromCity || b.from || '').toLowerCase().includes(q) ||
+            (b.toCity || b.to || '').toLowerCase().includes(q) ||
+            (b.date || b.travelDate || '').toLowerCase().includes(q) ||
+            (b.operator || b.busOperator || '').toLowerCase().includes(q);
+        });
+      }
+
+      const container = document.getElementById('bookingsListContainer');
+      if (!container) return;
+
+      if (!filtered.length) {
+        container.innerHTML = `
+        <div class="text-center py-5 border rounded bg-white shadow-sm" style="box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+          <div style="font-size: 1.5rem; font-weight: 800; color: #94a3b8; font-family: var(--font-head);">BusGo Booking Hub</div>
+          <h5 class="mt-3 fw-bold">No Bookings Found</h5>
+          <p class="text-muted small">No tickets match your search query or filter. You can book a seat instantly or add a demo ticket to verify.</p>
+          <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+            <a href="index.html#search-section" class="btn btn-primary px-4 fw-bold" style="border-radius: 8px;">Book a Ticket Now &rarr;</a>
+            <button type="button" class="btn btn-outline-secondary px-3 fw-bold" style="border-radius: 8px;" onclick="createSampleBooking()">Add Sample Ticket</button>
+          </div>
+        </div>
+      `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(b => {
+        const isConfirmed = String(b.status || 'CONFIRMED').toUpperCase() === 'CONFIRMED';
+        const seats = Array.isArray(b.seats) ? b.seats.join(', ') : (b.seatsBooked || b.seats || '-');
+        const fare = b.totalAmount || b.fare || b.total || 0;
+        const operator = b.operator || b.busOperator || 'IntrCity SmartBus';
+        const fromCity = b.fromCity || b.from || '-';
+        const toCity = b.toCity || b.to || '-';
+        const phone = b.phone || b.passengerPhone || '-';
+        const email = b.email || b.passengerEmail || '-';
+        const travelDate = b.date || b.travelDate || '-';
+        const departure = b.departure || '08:00 PM';
+        const pickup = b.pickupPoint || 'Main Bus Terminal';
+        const drop = b.dropPoint || 'City Drop Stand';
+
+        return `
+        <div class="ticket-card-item" id="ticket-${b.pnr}">
+          <div class="d-flex justify-content-between align-items-center border-bottom pb-2.5 mb-3 flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary fs-6 fw-bold">PNR: ${b.pnr}</span>
+              <span class="badge ${isConfirmed ? 'bg-success' : 'bg-danger'}">${isConfirmed ? 'CONFIRMED' : 'CANCELLED'}</span>
+            </div>
+            <small class="text-muted">${b.createdAt ? new Date(b.createdAt).toLocaleString('en-IN') : 'Confirmed Booking'}</small>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6 col-12">
+              <div class="ticket-row"><span class="ticket-label">Passenger:</span> <strong class="ticket-val">${b.passengerName || 'Guest'}</strong></div>
+              <div class="ticket-row"><span class="ticket-label">Gender &amp; Quota:</span> <span class="ticket-val">${b.gender || 'Female'} ${b.isLadiesSeat ? '<span class="badge bg-danger-subtle text-danger border border-danger-subtle ms-1" style="font-size:10px;">Ladies Safety</span>' : ''}</span></div>
+              <div class="ticket-row"><span class="ticket-label">Contact Phone:</span> <span class="ticket-val">${phone}</span></div>
+              <div class="ticket-row"><span class="ticket-label">Email:</span> <span class="ticket-val small">${email}</span></div>
+              <div class="ticket-row"><span class="ticket-label">Bus Operator:</span> <span class="ticket-val">${operator}</span></div>
+              <div class="ticket-row"><span class="ticket-label">Lead Driver:</span> <strong class="ticket-val text-primary">Captain Kirtan (+91 6264213958)</strong></div>
+            </div>
+
+            <div class="col-md-6 col-12">
+              <div class="ticket-row"><span class="ticket-label">Route:</span> <strong class="ticket-val text-primary">${fromCity} &rarr; ${toCity}</strong></div>
+              <div class="ticket-row"><span class="ticket-label">Travel Date &amp; Time:</span> <span class="ticket-val">${travelDate} &bull; ${departure}</span></div>
+              <div class="ticket-row"><span class="ticket-label">Boarding Point:</span> <span class="ticket-val text-primary">${pickup}</span></div>
+              <div class="ticket-row"><span class="ticket-label">Dropping Point:</span> <span class="ticket-val text-success">${drop}</span></div>
+              <div class="ticket-row"><span class="ticket-label">Allocated Seat(s):</span> <span class="ticket-val text-danger fw-bold">${seats}</span></div>
+              <div class="ticket-row"><span class="ticket-label">Payment Mode:</span> <span class="ticket-val">${b.paymentMethod || 'PhonePe UPI'} ${b.txnId ? `(${b.txnId})` : ''}</span></div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center border-top pt-2.5 mt-3 flex-wrap gap-2">
+            <div>
+              <span class="text-muted small">Total Fare Paid:</span> <strong class="fs-5" style="color:var(--primary);">&#8377;${fare}</strong>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              ${isConfirmed ? `
+                <a href="index.html?trackPnr=${encodeURIComponent(b.pnr)}" class="btn btn-sm btn-success fw-bold d-flex align-items-center gap-1 shadow-sm">
+                  Live Track Bus
+                </a>
+              ` : ''}
+              ${isConfirmed ? `
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="cancelBooking('${b.pnr}')">
+                  Cancel Ticket
+                </button>
+              ` : ''}
+              <button type="button" class="btn btn-sm btn-primary fw-semibold" onclick="downloadPdf('${b.pnr}')">
+                Download PDF
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-dark" onclick="printTicket('${b.pnr}')">
+                Print Ticket
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      }).join('');
+    }
+
+    function setFilter(type, btn) {
+      currentFilter = type;
+      document.querySelectorAll('.filter-pill-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderBookings();
+    }
+
+    function handleSearch(val) {
+      searchQuery = (val || '').trim();
+      renderBookings();
+    }
+
+    function clearSearch() {
+      const inp = document.getElementById('bookingSearchInput');
+      if (inp) inp.value = '';
+      searchQuery = '';
+      renderBookings();
+    }
+
+    function cancelBooking(pnr) {
+      if (!confirm(`Are you sure you want to cancel ticket with PNR ${pnr}?`)) return;
+      const all = getStoredBookings();
+      const target = all.find(b => b.pnr === pnr);
+      if (target) {
+        target.status = 'CANCELLED';
+        saveStoredBookings(all);
+        renderBookings();
+        showToast(`Ticket PNR ${pnr} cancelled successfully.`, 'success');
+        try {
+          fetch(`/api/bookings/cancel/${encodeURIComponent(pnr)}`, { method: 'PUT', signal: AbortSignal.timeout(2000) }).catch(() => {});
+        } catch (e) {}
+      }
+    }
+
+    function printTicket(pnr) {
+      const card = document.getElementById(`ticket-${pnr}`);
+      if (!card) return;
+      const printWin = window.open('', '_blank');
+      printWin.document.write(`
+      <html>
+        <head>
+          <title>BusGo Official e-Ticket - ${pnr}</title>
+          <style>
+            body { font-family: sans-serif; padding: 24px; color: #1e293b; }
+            .header { border-bottom: 2px solid #0284c7; padding-bottom: 12px; margin-bottom: 16px; }
+            .brand { font-size: 24px; font-weight: bold; color: #ea580c; }
+            .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; background: #eff6ff; color: #1d4ed8; }
+            .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+            .footer { border-top: 1px solid #cbd5e1; margin-top: 24px; padding-top: 12px; font-size: 11px; color: #64748b; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="brand">BusGo Smart Travel</div>
+            <div>Official Passenger Travel Itinerary &bull; PNR: <strong>${pnr}</strong></div>
+          </div>
+          ${card.innerHTML}
+          <div class="footer">
+            Captain Driver: Captain Kirtan (+91 6264213958) &bull; Verified by BusGo Technologies
+          </div>
+        </body>
+      </html>
+    `);
+      printWin.document.close();
+      printWin.focus();
+      setTimeout(() => { printWin.print(); printWin.close(); }, 350);
+    }
+
+    function downloadPdf(pnr) {
+      const card = document.getElementById(`ticket-${pnr}`);
+      if (!card) return;
+      showToast('Generating official PDF ticket...', 'info');
+
+      const opt = {
+        margin: 10,
+        filename: `BusGo_Ticket_${pnr}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      if (typeof html2pdf !== 'undefined') {
+        html2pdf().set(opt).from(card).save().then(() => {
+          showToast('PDF Ticket downloaded successfully!', 'success');
+        }).catch(() => {
+          showToast('Could not generate PDF. Please use Print Ticket instead.', 'error');
+        });
+      } else {
+        printTicket(pnr);
+      }
+    }
+
+    // Real-time synchronization when a ticket is booked in another tab
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'busgo_bookings' || e.key === 'busgo_booked_tickets_v1') {
+        renderBookings();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderBookings();
+      syncBackendBookings();
+    });
+  </script>
+</body>
+
+</html>
