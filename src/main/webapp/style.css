@@ -4503,3 +4503,504 @@ html[data-theme="dark"],
   }
 }
 
+/* ============================================================
+   MULTI-BUS 360 SEAT VIEWER STYLES (UI TEMPLATE 01: PREMIUM BLUE)
+   ============================================================ */
+
+.bus-360-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100050;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 6, 23, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 16px;
+  animation: bus360FadeIn 0.25s ease-out;
+}
+
+.bus-360-overlay.active {
+  display: flex !important;
+}
+
+@keyframes bus360FadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.bus-360-container {
+  position: relative;
+  width: 100%;
+  max-width: 1040px;
+  height: 85vh;
+  max-height: 640px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.85), 0 10px 30px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header HUD */
+.bus-360-header {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  right: 16px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.bus-360-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 30px;
+  padding: 7px 18px;
+  color: #fff;
+  pointer-events: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.bus-360-header-left svg {
+  color: #60a5fa;
+}
+
+.bus-360-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.bus-360-seat-label {
+  font-weight: 700;
+  font-size: 15px;
+  color: #93c5fd;
+  letter-spacing: 0.3px;
+  transition: transform 0.2s ease;
+  min-width: 58px;
+  text-align: center;
+}
+
+.btn-seat-nav {
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #f1f5f9;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  padding: 0;
+}
+
+.btn-seat-nav:hover {
+  background: #2563eb;
+  border-color: #3b82f6;
+  color: #ffffff;
+  transform: scale(1.12);
+}
+
+.btn-seat-nav:active {
+  transform: scale(0.95);
+}
+
+.badge-pulse {
+  animation: seatBadgePulse 0.4s ease;
+}
+
+@keyframes seatBadgePulse {
+  0% { transform: scale(1); color: #93c5fd; }
+  50% { transform: scale(1.25); color: #38bdf8; text-shadow: 0 0 12px rgba(56, 189, 248, 0.8); }
+  100% { transform: scale(1); color: #93c5fd; }
+}
+
+.bus-360-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.bus-360-bus-title {
+  font-size: 11px;
+  color: #94a3b8;
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Day / Night Theme Switcher */
+.bus-360-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.bus-360-theme-toggle {
+  display: flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 30px;
+  padding: 3px;
+  gap: 3px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-btn svg {
+  stroke: currentColor;
+}
+
+.theme-toggle-btn:hover {
+  color: #f1f5f9;
+}
+
+.theme-toggle-btn.active#btn360DayView {
+  background: #f59e0b;
+  color: #1e1b4b;
+  font-weight: 700;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.65);
+}
+
+.theme-toggle-btn.active#btn360NightView {
+  background: #3b82f6;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.65);
+}
+
+.bus-360-close-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  font-size: 18px;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.bus-360-close-btn:hover {
+  background: rgba(239, 68, 68, 0.85);
+  border-color: #ef4444;
+  transform: scale(1.08);
+}
+
+/* Canvas Viewport */
+.bus-360-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  overflow: hidden;
+  background: #000;
+  cursor: grab;
+}
+
+.bus-360-canvas-wrapper:active {
+  cursor: grabbing;
+}
+
+.bus-360-canvas-wrapper canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Loading Spinner */
+.bus-360-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #fff;
+  z-index: 15;
+}
+
+.bus-360-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(59, 130, 246, 0.2);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: bus360Spin 0.8s linear infinite;
+}
+
+@keyframes bus360Spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Center Drag Hint */
+.bus-360-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  border-radius: 40px;
+  padding: 12px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #fff;
+  pointer-events: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.bus-360-hint.fade-out {
+  opacity: 0;
+  transform: translate(-50%, -60%) scale(0.95);
+}
+
+.bus-360-hint svg {
+  color: #60a5fa;
+}
+
+.bus-360-hint-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #f1f5f9;
+  letter-spacing: 0.2px;
+}
+
+.bus-360-hint-sub {
+  font-size: 15px;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+/* Side Edge Rotate Arrows */
+.bus-360-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 12;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.bus-360-nav-btn:hover {
+  background: rgba(37, 99, 235, 0.85);
+  border-color: #3b82f6;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.bus-360-nav-left { left: 16px; }
+.bus-360-nav-right { right: 16px; }
+
+/* Upper Right Zoom Controls */
+.bus-360-zoom-controls {
+  position: absolute;
+  top: 70px;
+  right: 16px;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bus-360-zoom-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.bus-360-zoom-btn:hover {
+  background: rgba(37, 99, 235, 0.85);
+  border-color: #3b82f6;
+  transform: scale(1.1);
+}
+
+/* Bottom Presets Action Bar */
+.bus-360-bottom-bar {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 40px;
+  padding: 6px 10px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), 0 0 20px rgba(37, 99, 235, 0.2);
+  max-width: 95%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.bus-360-bottom-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.view-angle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  border-radius: 30px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.view-angle-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+}
+
+.view-angle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.view-angle-btn.active {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(37, 99, 235, 0.7);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .bus-360-container {
+    height: 90vh;
+    border-radius: 14px;
+  }
+  .bus-360-header {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+  }
+  .bus-360-header-left {
+    padding: 5px 12px;
+    gap: 6px;
+  }
+  .bus-360-seat-label {
+    font-size: 13px;
+  }
+  .bus-360-badge span {
+    display: none;
+  }
+  .bus-360-bus-title {
+    display: none;
+  }
+  .bus-360-bottom-bar {
+    bottom: 10px;
+    padding: 4px 6px;
+    gap: 4px;
+  }
+  .view-angle-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+    gap: 4px;
+  }
+  .bus-360-nav-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .bus-360-nav-left { left: 8px; }
+  .bus-360-nav-right { right: 8px; }
+  .bus-360-zoom-controls {
+    top: 60px;
+    right: 8px;
+  }
+  .bus-360-zoom-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+}
+
+

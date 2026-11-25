@@ -71,11 +71,15 @@ public class GmailSmtpUtil {
             return new SmtpResult(false, notice);
         }
 
-        try (SSLSocket socket = (SSLSocket) SSLSocketFactory.getDefault().createSocket(SMTP_HOST, SMTP_PORT);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-             OutputStream out = socket.getOutputStream()) {
+        try (java.net.Socket plainSocket = new java.net.Socket()) {
+            plainSocket.connect(new java.net.InetSocketAddress(SMTP_HOST, SMTP_PORT), 3000);
+            plainSocket.setSoTimeout(4000);
+            SSLSocketFactory sslFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            try (SSLSocket socket = (SSLSocket) sslFactory.createSocket(plainSocket, SMTP_HOST, SMTP_PORT, true);
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+                 OutputStream out = socket.getOutputStream()) {
 
-            socket.setSoTimeout(15000); // 15s timeout
+                socket.setSoTimeout(4000);
 
             // Welcome banner
             readSmtpResponse(reader);
@@ -157,7 +161,7 @@ public class GmailSmtpUtil {
 
             System.out.println(">>> [Real Gmail OTP] Live email successfully delivered to inbox: " + recipientEmail);
             return new SmtpResult(true, "Real OTP successfully delivered to your Gmail inbox (" + recipientEmail + ")!");
-
+            }
         } catch (Exception e) {
             System.err.println(">>> [Real Gmail OTP Failed]: " + e.getMessage());
             return new SmtpResult(false, "Could not deliver email: " + e.getMessage());
@@ -181,11 +185,15 @@ public class GmailSmtpUtil {
             return new SmtpResult(false, notice);
         }
 
-        try (SSLSocket socket = (SSLSocket) SSLSocketFactory.getDefault().createSocket(SMTP_HOST, SMTP_PORT);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-             OutputStream out = socket.getOutputStream()) {
+        try (java.net.Socket plainSocket = new java.net.Socket()) {
+            plainSocket.connect(new java.net.InetSocketAddress(SMTP_HOST, SMTP_PORT), 3000);
+            plainSocket.setSoTimeout(4000);
+            SSLSocketFactory sslFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            try (SSLSocket socket = (SSLSocket) sslFactory.createSocket(plainSocket, SMTP_HOST, SMTP_PORT, true);
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+                 OutputStream out = socket.getOutputStream()) {
 
-            socket.setSoTimeout(15000);
+                socket.setSoTimeout(4000);
             readSmtpResponse(reader);
 
             sendSmtpCommand(out, "EHLO smtp.gmail.com");
@@ -254,7 +262,7 @@ public class GmailSmtpUtil {
 
             System.out.println(">>> [Password Reset OTP] Successfully delivered to: " + recipientEmail);
             return new SmtpResult(true, "Password Reset OTP successfully delivered to your Gmail (" + recipientEmail + ")!");
-
+            }
         } catch (Exception e) {
             System.err.println(">>> [Password Reset OTP Failed]: " + e.getMessage());
             return new SmtpResult(false, "Could not deliver email: " + e.getMessage());
@@ -276,11 +284,15 @@ public class GmailSmtpUtil {
         }
         recipientEmail = recipientEmail.trim().toLowerCase();
 
-        try (SSLSocket socket = (SSLSocket) SSLSocketFactory.getDefault().createSocket(SMTP_HOST, SMTP_PORT);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-             OutputStream out = socket.getOutputStream()) {
+        try (java.net.Socket plainSocket = new java.net.Socket()) {
+            plainSocket.connect(new java.net.InetSocketAddress(SMTP_HOST, SMTP_PORT), 3000);
+            plainSocket.setSoTimeout(4000);
+            SSLSocketFactory sslFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            try (SSLSocket socket = (SSLSocket) sslFactory.createSocket(plainSocket, SMTP_HOST, SMTP_PORT, true);
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+                 OutputStream out = socket.getOutputStream()) {
 
-            socket.setSoTimeout(15000);
+                socket.setSoTimeout(4000);
             readSmtpResponse(reader);
 
             sendSmtpCommand(out, "EHLO smtp.gmail.com");
@@ -351,7 +363,7 @@ public class GmailSmtpUtil {
 
             System.out.println(">>> [Real Gmail E-Ticket] Sent successfully to: " + recipientEmail);
             return new SmtpResult(true, "E-Ticket email delivered to " + recipientEmail);
-
+            }
         } catch (Exception e) {
             System.err.println(">>> [Real Gmail E-Ticket Failed]: " + e.getMessage());
             return new SmtpResult(false, "Could not send E-Ticket: " + e.getMessage());

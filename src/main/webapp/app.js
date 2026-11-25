@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    BusGo — Online Bus Booking Application
    Full JavaScript Application Logic
 
@@ -2930,17 +2930,43 @@ function toggleSeat(n) {
   }
 }
 
-// ===== 3D / CABIN VIEW STUBS (DISABLED PER USER PREFERENCE) =====
+// ===== MULTI-BUS 360° SEAT VIEWER INTEGRATION =====
 function previewSeatInfo(seatNum) {
   if (!seatNum || isNaN(seatNum)) seatNum = 12;
   AppState.previewedSeat = seatNum;
+  if (window.Bus360Engine && window.Bus360Engine.isOpen()) {
+    window.Bus360Engine.changeSeat(seatNum);
+  }
 }
-function openSingleSeat3DModal(seatNum) { return; }
-function closeSingleSeat3DModal() { return; }
-function open3DSeatModal(seatNum) { return; }
-const SingleSeat3DViewer = { stopLoop() {}, setViewMode() {}, toggleFullscreen() {}, toggleAutoTour() {}, setPreset() {}, zoomDelta() {} };
-const Bus360Viewer = { stopLoop() {}, setMode() {}, toggleFullscreen() {} };
-const Cabin3D = { stopLoop() {} };
+
+function openCurrentBus360View() {
+  const bus = AppState.currentBus || (BusDatabase.buses && BusDatabase.buses[0]);
+  const seatNum = (AppState.selectedSeats && AppState.selectedSeats.length > 0) 
+    ? AppState.selectedSeats[0] 
+    : (AppState.previewedSeat || 12);
+  if (window.Bus360Engine) {
+    window.Bus360Engine.open(bus, seatNum);
+  }
+}
+
+function openSingleSeat3DModal(seatNum) { 
+  openCurrentBus360View(); 
+}
+function closeSingleSeat3DModal() { 
+  if (window.Bus360Engine) window.Bus360Engine.close(); 
+}
+function open3DSeatModal(seatNum) { 
+  openCurrentBus360View(); 
+}
+const SingleSeat3DViewer = { 
+  stopLoop() { if (window.Bus360Engine) window.Bus360Engine.close(); }, 
+  setViewMode(mode) { if (window.Bus360Engine) window.Bus360Engine.setViewAngle(mode); }, 
+  toggleFullscreen() {}, 
+  toggleAutoTour() {}, 
+  setPreset(p) { if (window.Bus360Engine) window.Bus360Engine.setViewAngle(p); }, 
+  zoomDelta(d) { if (window.Bus360Engine) { if (d > 0) window.Bus360Engine.zoomIn(); else window.Bus360Engine.zoomOut(); } } 
+};
+const Cabin3D = { stopLoop() { if (window.Bus360Engine) window.Bus360Engine.close(); } };
 
 
 // ---- PAYMENT ----
@@ -3729,6 +3755,10 @@ async function sendSignupOtp(isResend = false) {
       document.getElementById('signupTargetEmail').textContent = email;
       document.getElementById('signupFormStep').classList.add('d-none');
       document.getElementById('signupOtpStep').classList.remove('d-none');
+      if (data.demoOtp) {
+        const otpInput = document.getElementById('signupEnteredOtp');
+        if (otpInput) otpInput.value = data.demoOtp;
+      }
       showToast(`${data.message || 'Real OTP email sent to your Gmail inbox!'}`, 'success');
       startSignupOtpTimer(60); // 1 minute
     } else {
